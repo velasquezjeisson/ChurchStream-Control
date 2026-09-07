@@ -9,6 +9,7 @@ import urllib.request
 # ==========================================================
 
 SERVER_URL = "http://127.0.0.1:8765/"
+INICIADO = False
 
 
 def server_esta_activo():
@@ -26,40 +27,80 @@ def server_esta_activo():
 
 def iniciar_churchstream():
     """
-    Inicia init.bat solamente si el servidor no está activo.
+    Inicia ChurchStream Control una sola vez.
     """
 
-    # Si el servidor ya funciona, no hacemos nada
+    global INICIADO
+
+    # Evitar ejecuciones múltiples
+    if INICIADO:
+        return
+
+    INICIADO = True
+
+    # Eliminar el temporizador después de ejecutarse
+    obs.timer_remove(iniciar_churchstream)
+
+    obs.script_log(
+        obs.LOG_INFO,
+        "[ChurchStream] Verificando servidor..."
+    )
+
+    # Si ya está funcionando, no hacer nada
     if server_esta_activo():
 
         obs.script_log(
             obs.LOG_INFO,
-            "[ChurchStream] El servidor ya está ejecutándose."
+            "[ChurchStream] ChurchStream Control ya está ejecutándose."
         )
 
         return
 
-    # Obtener la ubicación de este script
+    # ======================================================
+    # UBICACIÓN DEL SCRIPT
+    # ======================================================
+
     script_path = os.path.abspath(__file__)
 
-    # Carpeta /obs
+    obs.script_log(
+        obs.LOG_INFO,
+        "[ChurchStream] Script ubicado en: " + script_path
+    )
+
+    # Carpeta donde está este script
+    # Ejemplo:
+    # D:\OBS\ChurchStream-Control\obs\
     obs_folder = os.path.dirname(script_path)
 
     # Carpeta principal del proyecto
+    # Ejemplo:
+    # D:\OBS\ChurchStream-Control\
     project_folder = os.path.dirname(obs_folder)
 
     # Ruta de init.bat
     init_bat = os.path.join(project_folder, "init.bat")
 
-    # Verificar que existe
+    obs.script_log(
+        obs.LOG_INFO,
+        "[ChurchStream] Buscando init.bat en: " + init_bat
+    )
+
+    # ======================================================
+    # VERIFICAR INIT.BAT
+    # ======================================================
+
     if not os.path.exists(init_bat):
 
         obs.script_log(
             obs.LOG_ERROR,
-            "[ChurchStream] No se encontró init.bat en: " + init_bat
+            "[ChurchStream] ERROR: No se encontró init.bat."
         )
 
         return
+
+    # ======================================================
+    # INICIAR CHURCHSTREAM
+    # ======================================================
 
     try:
 
@@ -68,7 +109,6 @@ def iniciar_churchstream():
             "[ChurchStream] Iniciando ChurchStream Control..."
         )
 
-        # Ejecutar init.bat
         subprocess.Popen(
             ["cmd.exe", "/c", init_bat],
             cwd=project_folder,
@@ -84,13 +124,17 @@ def iniciar_churchstream():
 
         obs.script_log(
             obs.LOG_ERROR,
-            "[ChurchStream] Error al iniciar: " + str(error)
+            "[ChurchStream] ERROR al iniciar: " + str(error)
         )
 
 
-def obs_script_load(settings):
+# ==========================================================
+# OBS SCRIPT LOAD
+# ==========================================================
+
+def script_load(settings):
     """
-    Esta función se ejecuta automáticamente cuando OBS carga el script.
+    Se ejecuta automáticamente cuando OBS carga el script.
     """
 
     obs.script_log(
@@ -105,12 +149,21 @@ def obs_script_load(settings):
 
     obs.script_log(
         obs.LOG_INFO,
+        "Esperando 3 segundos para iniciar..."
+    )
+
+    obs.script_log(
+        obs.LOG_INFO,
         "=============================================="
     )
 
-    # Esperamos unos segundos para que OBS termine de iniciar
+    # Esperar 3 segundos para que OBS termine de iniciar
     obs.timer_add(iniciar_churchstream, 3000)
 
+
+# ==========================================================
+# DESCRIPCIÓN DEL SCRIPT
+# ==========================================================
 
 def script_description():
 
@@ -127,7 +180,8 @@ def script_description():
     </p>
 
     <p>
-    Antes de iniciar, comprueba si ChurchStream ya está funcionando
-    en el puerto 8765 para evitar iniciar múltiples servidores.
+    Antes de iniciar, comprueba si ChurchStream Control ya está
+    funcionando en el puerto 8765 para evitar iniciar múltiples
+    servidores.
     </p>
     """
