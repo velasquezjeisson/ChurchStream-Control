@@ -1,5 +1,5 @@
 @echo off
-title Control de Transmision - Iglesia Oasis
+title ChurchStream Control
 cd /d "%~dp0"
 set "OPENLP_EXE="
 if exist "%ProgramFiles%\OpenLP\OpenLP.exe" set "OPENLP_EXE=%ProgramFiles%\OpenLP\OpenLP.exe"
