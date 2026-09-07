@@ -265,7 +265,7 @@ py --version
 Clona el repositorio:
 
 ```bash
-git clone https://github.com/TU-USUARIO/ChurchStream-Control.git
+git clone https://github.com/velasquezjeisson/ChurchStream-Control.git
 ```
 
 Luego entra en la carpeta:
