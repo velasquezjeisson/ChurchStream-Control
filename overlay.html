@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+
+<style>
+
+/* =========================================================
+   CHURCHSTREAM CONTROL
+   OVERLAY PARA OBS
+   ========================================================= */
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  width:1920px;
+  height:1080px;
+  overflow:hidden;
+  background:transparent;
+  font-family:
+    "Segoe UI",
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+#stage{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+
+.hidden{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+
+/* =========================================================
+   BIBLIA
+   ========================================================= */
+
+#bible{
+
+  position:fixed;
+
+  left:50px;
+  right:50px;
+  bottom:45px;
+
+  min-height:185px;
+
+  padding:
+    25px
+    42px
+    28px
+    48px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(8,42,78,.97),
+      rgba(5,73,119,.95)
+    );
+
+  border:
+    2px solid rgba(222,178,76,.92);
+
+  border-left:
+    7px solid #d9ae45;
+
+  border-radius:18px;
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.18);
+
+  color:white;
+
+  opacity:0;
+
+  transform:
+    translateX(-70px)
+    scale(.985);
+
+  transition:
+    opacity .35s ease,
+    transform .45s cubic-bezier(.2,.8,.2,1);
+
+  overflow:hidden;
+}
+
+
+#bible.visible{
+
+  opacity:1;
+
+  transform:
+    translateX(0)
+    scale(1);
+}
+
+
+/* Brillo Biblia */
+
+.glintB{
+
+  position:absolute;
+
+  top:0;
+  left:-25%;
+
+  width:20%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.16),
+      transparent
+    );
+
+  transform:skewX(-18deg);
+
+  pointer-events:none;
+}
+
+
+#bible.visible .glintB{
+  animation:
+    glintBible
+    1.4s ease
+    .15s
+    1;
+}
+
+
+@keyframes glintBible{
+
+  from{
+    left:-25%;
+  }
+
+  to{
+    left:125%;
+  }
+
+}
+
+
+.ref{
+
+  font-size:35px;
+
+  font-weight:800;
+
+  color:#f0c95e;
+
+  text-shadow:
+    0 2px 4px rgba(0,0,0,.35);
+
+  margin-bottom:12px;
+}
+
+
+.version{
+
+  font-size:19px;
+
+  font-weight:700;
+
+  letter-spacing:2px;
+
+  color:#9edff5;
+
+  text-transform:uppercase;
+
+  margin-left:12px;
+}
+
+
+.verse{
+
+  font-size:29px;
+
+  line-height:1.34;
+
+  font-weight:500;
+
+  color:#fff;
+
+  text-shadow:
+    0 2px 3px rgba(0,0,0,.35);
+
+  max-width:1760px;
+}
+
+
+/* =========================================================
+   LOWER THIRD
+   ========================================================= */
+
+#lowerThird{
+
+  position:fixed;
+
+  left:28px;
+  right:28px;
+
+  bottom:48px;
+
+  height:190px;
+
+  display:flex;
+
+  align-items:center;
+
+  opacity:0;
+
+  transform:
+    translateX(-110px);
+
+  transition:
+    opacity .55s ease,
+    transform .7s cubic-bezier(.18,.8,.2,1);
+
+  pointer-events:none;
+}
+
+
+#lowerThird.visible{
+
+  opacity:1;
+
+  transform:
+    translateX(0);
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logoWrap{
+
+  position:relative;
+
+  width:178px;
+  height:178px;
+
+  flex:
+    0 0 178px;
+
+  z-index:10;
+}
+
+
+/* Halo exterior */
+
+.logoWrap:before{
+
+  content:"";
+
+  position:absolute;
+
+  inset:-7px;
+
+  border-radius:50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #43bfff,
+      #0a5bb4 55%,
+      #f2b52e
+    );
+
+  box-shadow:
+
+    0 0 22px rgba(40,164,255,.45),
+
+    0 10px 25px rgba(0,0,0,.35);
+}
+
+
+/* Borde interno */
+
+.logoWrap:after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:3px;
+
+  border-radius:50%;
+
+  border:
+    2px solid rgba(255,255,255,.18);
+}
+
+
+.logo{
+
+  position:absolute;
+
+  inset:7px;
+
+  width:164px;
+  height:164px;
+
+  object-fit:cover;
+
+  border-radius:50%;
+
+  z-index:2;
+
+  background:
+    radial-gradient(
+      circle,
+      #174f83,
+      #071c31
+    );
+}
+
+
+/* =========================================================
+   CUERPO DEL LOWER THIRD
+   ========================================================= */
+
+.main{
+
+  position:relative;
+
+  height:160px;
+
+  margin-left:-18px;
+
+  flex:1;
+
+  padding:
+
+    32px
+    85px
+    28px
+    85px;
+
+  background:
+
+    linear-gradient(
+      105deg,
+
+      rgba(4,29,59,.98),
+
+      rgba(7,68,124,.95) 72%,
+
+      rgba(4,37,74,.97)
+    );
+
+  border:
+
+    1px solid
+    rgba(87,190,255,.55);
+
+
+  /*
+     Diseño con punta al final
+  */
+
+  clip-path:
+
+    polygon(
+
+      0 0,
+
+      97% 0,
+
+      100% 50%,
+
+      97% 100%,
+
+      0 100%,
+
+      3% 50%
+
+    );
+
+
+  filter:
+
+    drop-shadow(
+      0 12px 20px
+      rgba(0,0,0,.35)
+    );
+
+
+  overflow:hidden;
+}
+
+
+/* Línea superior */
+
+.main:before{
+
+  content:"";
+
+  position:absolute;
+
+  left:55px;
+  right:70px;
+
+  top:0;
+
+  height:3px;
+
+  background:
+
+    linear-gradient(
+
+      90deg,
+
+      #1b9ff0,
+
+      #5fd3ff,
+
+      transparent
+
+    );
+
+  opacity:.95;
+}
+
+
+/* Línea inferior */
+
+.main:after{
+
+  content:"";
+
+  position:absolute;
+
+  left:40px;
+  right:75px;
+
+  bottom:4px;
+
+  height:3px;
+
+  background:
+
+    linear-gradient(
+
+      90deg,
+
+      #e7a92b,
+
+      #48c5ff 48%,
+
+      transparent
+
+    );
+
+  box-shadow:
+
+    0 0 12px
+    rgba(72,197,255,.8);
+}
+
+
+/* =========================================================
+   TEXTOS
+   ========================================================= */
+
+.eyebrow{
+
+  position:relative;
+
+  color:#ffffff;
+
+  font-size:14px;
+
+  font-weight:800;
+
+  letter-spacing:4px;
+
+  text-transform:uppercase;
+
+  white-space:nowrap;
+
+  z-index:3;
+
+  margin-bottom:10px;
+}
+
+
+.eyebrow:after{
+
+  content:"";
+
+  display:inline-block;
+
+  vertical-align:middle;
+
+  width:70px;
+
+  height:2px;
+
+  margin-left:13px;
+
+  background:
+
+    linear-gradient(
+      90deg,
+      #f2b52e,
+      transparent
+    );
+}
+
+
+.title{
+
+  color:#ffffff;
+
+  font-size:48px;
+
+  line-height:1;
+
+  font-weight:900;
+
+  letter-spacing:.5px;
+
+  text-transform:uppercase;
+
+  text-shadow:
+
+    0 2px 9px
+    rgba(0,0,0,.35);
+
+  white-space:nowrap;
+
+  transform-origin:left center;
+
+  transition:
+    font-size .15s ease;
+}
+
+
+.subtitle{
+
+  margin-top:12px;
+
+  color:#9edff5;
+
+  font-size:21px;
+
+  line-height:1.2;
+
+  letter-spacing:3px;
+
+  text-transform:uppercase;
+
+  white-space:nowrap;
+
+  transform-origin:left center;
+
+  transition:
+    font-size .15s ease;
+}
+
+
+/* =========================================================
+   DETALLE DORADO FINAL
+   ========================================================= */
+
+.goldEnd{
+
+  position:absolute;
+
+  right:-7px;
+
+  top:17px;
+
+  width:26px;
+
+  height:126px;
+
+  background:
+
+    linear-gradient(
+
+      180deg,
+
+      #ffd86a,
+
+      #c98516
+
+    );
+
+  clip-path:
+
+    polygon(
+
+      35% 0,
+
+      100% 0,
+
+      65% 100%,
+
+      0 100%
+
+    );
+}
+
+
+/* =========================================================
+   EFECTO DE BRILLO
+   ========================================================= */
+
+.glint{
+
+  position:absolute;
+
+  left:22%;
+
+  bottom:7px;
+
+  width:180px;
+
+  height:3px;
+
+  background:
+
+    linear-gradient(
+
+      90deg,
+
+      transparent,
+
+      #ffffff,
+
+      transparent
+
+    );
+
+  opacity:.7;
+
+  animation:
+
+    lowerGlint
+
+    4s ease-in-out
+
+    infinite;
+}
+
+
+@keyframes lowerGlint{
+
+  0%,
+  65%{
+
+    transform:
+      translateX(-120px);
+
+    opacity:0;
+  }
+
+
+  75%{
+    opacity:.8;
+  }
+
+
+  90%,
+  100%{
+
+    transform:
+      translateX(260px);
+
+    opacity:0;
+  }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div id="stage">
+
+
+  <!-- ============================================
+       BIBLIA
+       ============================================ -->
+
+  <div id="bible">
+
+    <div class="glintB"></div>
+
+    <div class="ref">
+
+      <span id="bref"></span>
+
+      <span
+        class="version"
+        id="bver">
+      </span>
+
+    </div>
+
+
+    <div
+      class="verse"
+      id="btext">
+    </div>
+
+  </div>
+
+
+
+  <!-- ============================================
+       LOWER THIRD
+       ============================================ -->
+
+  <div id="lowerThird">
+
+
+    <div class="logoWrap">
+
+      <img
+        id="brandLogo"
+        class="logo"
+        alt="Logo"
+      >
+
+    </div>
+
+
+
+    <div class="main">
+
+
+      <div
+        class="eyebrow"
+        id="ley">
+        ORGANIZACIÓN
+      </div>
+
+
+      <div
+        class="title"
+        id="ltitle">
+      </div>
+
+
+      <div
+        class="subtitle"
+        id="lsub">
+      </div>
+
+
+      <div class="goldEnd"></div>
+
+      <div class="glint"></div>
+
+
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   BROADCAST CHANNELS
+   ========================================================= */
+
+const bcBible =
+  new BroadcastChannel(
+    'obs-bible-openlp'
+  );
+
+
+const bcLower =
+  new BroadcastChannel(
+    'obs-lower-third'
+  );
+
+
+const bcBranding =
+  new BroadcastChannel(
+    'obs-branding'
+  );
+
+
+
+/* =========================================================
+   ELEMENTOS
+   ========================================================= */
+
+const B =
+  document.getElementById('bible');
+
+
+const L =
+  document.getElementById('lowerThird');
+
+
+const logo =
+  document.getElementById('brandLogo');
+
+
+const ley =
+  document.getElementById('ley');
+
+
+const title =
+  document.getElementById('ltitle');
+
+
+const subtitle =
+  document.getElementById('lsub');
+
+
+
+/* =========================================================
+   BRANDING ACTUAL
+   ========================================================= */
+
+let branding = {
+
+  organization:
+    'ChurchStream',
+
+  tagline:
+    '',
+
+  logo:
+    ''
+
+};
+
+
+
+/* =========================================================
+   CARGAR CONFIGURACIÓN LOCAL
+   ========================================================= */
+
+function loadBrandingFromStorage(){
+
+  const possibleKeys = [
+
+    'churchstream-branding',
+
+    'churchstream-config',
+
+    'obs-branding',
+
+    'obsBranding',
+
+    'branding'
+
+  ];
+
+
+  for(const key of possibleKeys){
+
+    try{
+
+      const value =
+        localStorage.getItem(key);
+
+
+      if(!value)
+        continue;
+
+
+      const data =
+        JSON.parse(value);
+
+
+      applyBranding(data);
+
+      return;
+
+    }
+    catch(e){
+
+      console.warn(
+        'No se pudo leer branding:',
+        key
+      );
+
+    }
+
+  }
+
+}
+
+
+
+/* =========================================================
+   APLICAR BRANDING
+   ========================================================= */
+
+function applyBranding(data = {}){
+
+
+  /*
+     Aceptamos varios nombres de propiedades
+     para mantener compatibilidad.
+  */
+
+  const organization =
+
+    data.organization ||
+
+    data.name ||
+
+    data.churchName ||
+
+    data.institutionName ||
+
+    branding.organization;
+
+
+  const tagline =
+
+    data.tagline ||
+
+    data.subtitle ||
+
+    data.motto ||
+
+    branding.tagline;
+
+
+  const logoData =
+
+    data.logo ||
+
+    data.logoData ||
+
+    data.logoUrl ||
+
+    branding.logo;
+
+
+
+  branding = {
+
+    organization,
+
+    tagline,
+
+    logo:logoData
+
+  };
+
+
+
+  /*
+     Aplicar nombre
+  */
+
+  if(
+    organization &&
+    ley
+  ){
+
+    ley.textContent =
+      organization;
+
+  }
+
+
+
+  /*
+     Aplicar logo
+  */
+
+  if(
+    logoData &&
+    logo
+  ){
+
+    logo.src =
+      logoData;
+
+  }
+
+
+  /*
+     Si no existe logo,
+     dejamos el espacio preparado.
+  */
+
+  if(
+    !logoData &&
+    logo
+  ){
+
+    logo.removeAttribute('src');
+
+  }
+
+}
+
+
+
+/* =========================================================
+   AJUSTE AUTOMÁTICO DE TEXTO
+   ========================================================= */
+
+function fitText(
+  element,
+  maxSize,
+  minSize
+){
+
+  if(!element)
+    return;
+
+
+  element.style.fontSize =
+    maxSize + 'px';
+
+
+  let size =
+    maxSize;
+
+
+  const parent =
+    element.parentElement;
+
+
+  if(!parent)
+    return;
+
+
+  const maxWidth =
+
+    parent.clientWidth - 170;
+
+
+  while(
+
+    element.scrollWidth > maxWidth &&
+
+    size > minSize
+
+  ){
+
+    size--;
+
+    element.style.fontSize =
+      size + 'px';
+
+  }
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR BIBLIA
+   ========================================================= */
+
+function showBible(d){
+
+
+  document.getElementById('bref').textContent =
+
+    d.reference || '';
+
+
+  document.getElementById('bver').textContent =
+
+    d.version || '';
+
+
+  document.getElementById('btext').textContent =
+
+    d.text || '';
+
+
+
+  /*
+     Nunca mostrar ambos al mismo tiempo
+  */
+
+  L.classList.remove('visible');
+
+
+  B.classList.remove('visible');
+
+
+  /*
+     Reiniciar animación
+  */
+
+  void B.offsetWidth;
+
+
+  B.classList.add('visible');
+
+}
+
+
+
+/* =========================================================
+   MOSTRAR LOWER THIRD
+   ========================================================= */
+
+function showLower(d){
+
+
+  /*
+     Branding configurable
+  */
+
+  ley.textContent =
+
+    d.eyebrow ||
+
+    branding.organization ||
+
+    'ORGANIZACIÓN';
+
+
+
+  title.textContent =
+    d.title || '';
+
+
+  subtitle.textContent =
+    d.subtitle || '';
+
+
+
+  /*
+     Ajustar automáticamente textos
+  */
+
+  requestAnimationFrame(()=>{
+
+
+    fitText(
+      title,
+      48,
+      26
+    );
+
+
+    fitText(
+      subtitle,
+      21,
+      13
+    );
+
+  });
+
+
+
+  /*
+     Ocultar Biblia
+  */
+
+  B.classList.remove('visible');
+
+
+  /*
+     Reiniciar animación
+  */
+
+  L.classList.remove('visible');
+
+
+  void L.offsetWidth;
+
+
+  L.classList.add('visible');
+
+}
+
+
+
+/* =========================================================
+   OCULTAR TODO
+   ========================================================= */
+
+function hideAll(){
+
+  B.classList.remove('visible');
+
+  L.classList.remove('visible');
+
+}
+
+
+
+/* =========================================================
+   MENSAJES BIBLIA
+   ========================================================= */
+
+bcBible.onmessage = e => {
+
+
+  const d =
+    e.data;
+
+
+  if(
+    d?.type === 'show'
+  ){
+
+    showBible(d);
+
+  }
+
+
+  else if(
+    d?.type === 'hide'
+  ){
+
+    B.classList.remove('visible');
+
+  }
+
+
+  else if(
+    d?.type === 'allhide'
+  ){
+
+    hideAll();
+
+  }
+
+};
+
+
+
+/* =========================================================
+   MENSAJES LOWER THIRD
+   ========================================================= */
+
+bcLower.onmessage = e => {
+
+
+  const d =
+    e.data;
+
+
+  if(
+    d?.action === 'show'
+  ){
+
+    showLower(d);
+
+  }
+
+
+  else if(
+    d?.action === 'hide'
+  ){
+
+    L.classList.remove('visible');
+
+  }
+
+
+  else if(
+    d?.action === 'allhide'
+  ){
+
+    hideAll();
+
+  }
+
+};
+
+
+
+/* =========================================================
+   MENSAJES DE BRANDING
+   ========================================================= */
+
+bcBranding.onmessage = e => {
+
+
+  const d =
+    e.data;
+
+
+  /*
+     Soporta mensajes directos
+     o mensajes con type/action.
+  */
+
+  if(
+
+    d?.type === 'branding' ||
+
+    d?.action === 'branding' ||
+
+    d?.organization ||
+
+    d?.name ||
+
+    d?.churchName
+
+  ){
+
+    applyBranding(d);
+
+  }
+
+};
+
+
+
+/* =========================================================
+   INICIALIZACIÓN
+   ========================================================= */
+
+loadBrandingFromStorage();
+
+
+/*
+   Si existe un logo definido
+   por defecto en el mismo directorio,
+   no lo cargamos automáticamente.
+
+   El sistema usará la configuración
+   enviada desde controller.html.
+*/
+
+</script>
+
+</body>
+</html>

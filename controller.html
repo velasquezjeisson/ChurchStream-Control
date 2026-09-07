@@ -1,0 +1,2803 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>ChurchStream Control</title>
+
+<style>
+
+:root{
+  --gold:#dfb84f;
+  --cyan:#8ee5ff;
+  --bg:#07101a;
+  --card:rgba(5,25,45,.94);
+  --green:#2f9e74;
+  --blue:#173d5b;
+  --red:#6e2630;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      #173c61,
+      #0c1420 48%,
+      #070b11
+    );
+
+  color:#fff;
+
+  font-family:
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+.wrap{
+  max-width:1180px;
+  margin:auto;
+  padding:24px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:20px;
+
+  margin-bottom:22px;
+}
+
+.brand-system{
+  display:flex;
+  flex-direction:column;
+}
+
+.tag{
+  color:var(--gold);
+
+  font-weight:800;
+
+  letter-spacing:2.5px;
+
+  font-size:12px;
+
+  text-transform:uppercase;
+}
+
+h1{
+  margin:4px 0 0;
+
+  font-size:32px;
+
+  letter-spacing:.3px;
+}
+
+.system-subtitle{
+  margin-top:5px;
+
+  color:#8da8ba;
+
+  font-size:13px;
+}
+
+.conn{
+  font-size:14px;
+
+  white-space:nowrap;
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+.tabs{
+  display:flex;
+
+  gap:8px;
+
+  margin-bottom:16px;
+
+  flex-wrap:wrap;
+}
+
+.tab{
+  background:#12283b;
+
+  color:#b9d2e3;
+
+  border:1px solid #29465e;
+
+  border-radius:10px;
+
+  padding:11px 18px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  transition:.18s ease;
+}
+
+.tab:hover{
+  background:#17354c;
+}
+
+.tab.active{
+  background:
+    linear-gradient(
+      135deg,
+      #e5c45c,
+      #b88726
+    );
+
+  color:#08111a;
+
+  border-color:#f0cf70;
+}
+
+
+/* =====================================================
+   PANELS
+===================================================== */
+
+.panel{
+  display:none;
+}
+
+.panel.active{
+  display:block;
+}
+
+.card{
+  background:var(--card);
+
+  border:
+    1px solid
+    rgba(223,184,79,.45);
+
+  border-radius:18px;
+
+  padding:24px;
+
+  box-shadow:
+    0 15px 45px
+    rgba(0,0,0,.18);
+}
+
+
+/* =====================================================
+   FORMS
+===================================================== */
+
+label{
+  display:block;
+
+  color:#b9d2e3;
+
+  font-size:13px;
+
+  font-weight:700;
+
+  margin-bottom:7px;
+
+  letter-spacing:.3px;
+}
+
+input,
+select{
+  width:100%;
+
+  border:
+    1px solid
+    #37617d;
+
+  background:#0a1d30;
+
+  color:#fff;
+
+  border-radius:10px;
+
+  padding:13px;
+
+  font-size:17px;
+
+  outline:none;
+
+  transition:.18s ease;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--cyan);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(142,229,255,.08);
+}
+
+input[type="file"]{
+  padding:10px;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+button{
+  border:0;
+
+  border-radius:11px;
+
+  padding:13px 20px;
+
+  font-weight:800;
+
+  font-size:15px;
+
+  cursor:pointer;
+
+  transition:.18s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+
+  filter:brightness(1.08);
+}
+
+.primary{
+  background:
+    linear-gradient(
+      135deg,
+      #e5c45c,
+      #b88726
+    );
+
+  color:#08111a;
+}
+
+.secondary{
+  background:#173d5b;
+
+  color:white;
+}
+
+.danger{
+  background:#6e2630;
+
+  color:white;
+}
+
+.save{
+  background:
+    linear-gradient(
+      135deg,
+      #38a879,
+      #197154
+    );
+
+  color:white;
+}
+
+.actions{
+  display:flex;
+
+  gap:10px;
+
+  margin-top:18px;
+
+  flex-wrap:wrap;
+}
+
+
+/* =====================================================
+   BIBLE
+===================================================== */
+
+.grid{
+  display:grid;
+
+  grid-template-columns:
+    1fr 240px;
+
+  gap:14px;
+}
+
+.status{
+  margin-top:14px;
+
+  color:#9edff5;
+
+  min-height:24px;
+}
+
+.preview{
+  margin-top:20px;
+
+  padding:18px;
+
+  border-left:
+    4px solid
+    var(--gold);
+
+  background:
+    rgba(255,255,255,.045);
+
+  border-radius:14px;
+}
+
+.p-ref{
+  color:#f0c95e;
+
+  font-size:23px;
+
+  font-weight:800;
+}
+
+.p-ver{
+  color:#9edff5;
+
+  font-size:13px;
+
+  letter-spacing:1.4px;
+
+  margin-left:10px;
+}
+
+.p-text{
+  font-size:18px;
+
+  line-height:1.45;
+
+  margin-top:10px;
+}
+
+.hint{
+  color:#91a7b8;
+
+  font-size:13px;
+
+  margin-top:9px;
+
+  line-height:1.45;
+}
+
+
+/* =====================================================
+   LOWER THIRD
+===================================================== */
+
+.lower-grid{
+  display:grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:14px;
+}
+
+.big{
+  font-size:18px;
+}
+
+.mini-title{
+  color:var(--gold);
+
+  font-weight:800;
+
+  letter-spacing:1.4px;
+
+  margin-bottom:18px;
+
+  font-size:16px;
+}
+
+
+/* =====================================================
+   PRESETS
+===================================================== */
+
+.presets-box{
+  margin-top:28px;
+
+  padding-top:22px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.12);
+}
+
+.presets-header{
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  margin-bottom:14px;
+}
+
+.presets-title{
+  color:var(--gold);
+
+  font-size:16px;
+
+  font-weight:800;
+
+  letter-spacing:1px;
+}
+
+.preset-list{
+  display:grid;
+
+  grid-template-columns:
+    repeat(auto-fill,minmax(260px,1fr));
+
+  gap:10px;
+}
+
+.preset-item{
+  position:relative;
+
+  text-align:left;
+
+  padding:
+    15px
+    48px
+    15px
+    16px;
+
+  background:#0a1d30;
+
+  border:
+    1px solid
+    #294d68;
+
+  border-radius:12px;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:.18s ease;
+}
+
+.preset-item:hover{
+  border-color:var(--gold);
+
+  background:#102941;
+
+  transform:translateY(-1px);
+}
+
+.preset-eyebrow{
+  font-size:11px;
+
+  letter-spacing:2px;
+
+  color:#8ee5ff;
+
+  margin-bottom:6px;
+
+  text-transform:uppercase;
+}
+
+.preset-name{
+  font-size:17px;
+
+  font-weight:800;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+}
+
+.preset-subtitle{
+  margin-top:5px;
+
+  font-size:12px;
+
+  color:#9db2c3;
+
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
+}
+
+.delete-preset{
+  position:absolute;
+
+  right:10px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  width:32px;
+
+  height:32px;
+
+  padding:0;
+
+  border-radius:8px;
+
+  background:#632832;
+
+  color:#fff;
+
+  font-size:15px;
+}
+
+.empty-presets{
+  padding:22px;
+
+  text-align:center;
+
+  color:#8198aa;
+
+  border:
+    1px dashed
+    #34536b;
+
+  border-radius:12px;
+}
+
+
+/* =====================================================
+   HIDE ALL
+===================================================== */
+
+.all{
+  margin-top:18px;
+
+  width:100%;
+
+  background:#243442;
+
+  color:#fff;
+
+  border:
+    1px solid
+    #3d5567;
+}
+
+
+/* =====================================================
+   CONFIGURATION
+===================================================== */
+
+.brand-grid{
+  display:grid;
+
+  grid-template-columns:
+    1fr 300px;
+
+  gap:24px;
+
+  align-items:start;
+}
+
+.brand-preview{
+  min-height:300px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:14px;
+
+  padding:25px;
+
+  background:#081725;
+
+  border:
+    1px dashed
+    #426783;
+
+  border-radius:16px;
+}
+
+.brand-logo{
+  width:170px;
+
+  height:170px;
+
+  object-fit:contain;
+
+  border-radius:18px;
+
+  background:
+    rgba(255,255,255,.04);
+
+  border:
+    1px solid
+    rgba(255,255,255,.12);
+}
+
+.brand-name-preview{
+  font-size:20px;
+
+  font-weight:800;
+
+  text-align:center;
+}
+
+.brand-tag-preview{
+  font-size:13px;
+
+  color:#8ee5ff;
+
+  text-align:center;
+
+  line-height:1.4;
+}
+
+.config-note{
+  margin-top:18px;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  background:
+    rgba(142,229,255,.07);
+
+  border:
+    1px solid
+    rgba(142,229,255,.15);
+
+  color:#b9d2e3;
+
+  font-size:13px;
+
+  line-height:1.5;
+}
+
+.config-note strong{
+  color:var(--cyan);
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:800px){
+
+  .grid,
+  .lower-grid,
+  .brand-grid{
+    grid-template-columns:1fr;
+  }
+
+  .wrap{
+    padding:14px;
+  }
+
+  header{
+    align-items:flex-start;
+
+    flex-direction:column;
+  }
+
+  h1{
+    font-size:27px;
+  }
+
+  .actions button{
+    flex:1;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="wrap">
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+  <div class="brand-system">
+
+    <div
+      class="tag"
+      id="headerOrg"
+    >
+      MI ORGANIZACIÓN
+    </div>
+
+    <h1>
+      ChurchStream Control
+    </h1>
+
+    <div class="system-subtitle">
+      Control local para OBS, OpenLP y gráficos en transmisión
+    </div>
+
+  </div>
+
+
+  <div
+    class="conn"
+    id="conn"
+  >
+    ● comprobando OpenLP…
+  </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     TABS
+===================================================== -->
+
+<div class="tabs">
+
+  <button
+    class="tab active"
+    data-tab="biblia"
+  >
+    📖 BIBLIA
+  </button>
+
+
+  <button
+    class="tab"
+    data-tab="lower"
+  >
+    🎬 LOWER THIRD
+  </button>
+
+
+  <button
+    class="tab"
+    data-tab="config"
+  >
+    ⚙️ CONFIGURACIÓN
+  </button>
+
+</div>
+
+
+
+<!-- =====================================================
+     BIBLIA
+===================================================== -->
+
+<section
+  class="panel active"
+  id="biblia"
+>
+
+<div class="card">
+
+  <div class="mini-title">
+    BIBLIA / OPENLP
+  </div>
+
+
+  <div class="grid">
+
+    <div>
+
+      <label>
+        REFERENCIA BÍBLICA
+      </label>
+
+      <input
+        id="q"
+        list="books"
+        placeholder="Ej.: Juan 3:16-17"
+        autocomplete="off"
+      >
+
+      <datalist id="books"></datalist>
+
+    </div>
+
+
+    <div>
+
+      <label>
+        VERSIÓN ACTIVA
+      </label>
+
+      <select id="v">
+
+        <option>
+          RVR1909
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="actions">
+
+    <button
+      class="primary"
+      id="b"
+    >
+      BUSCAR PASAJE
+    </button>
+
+
+    <button
+      class="secondary"
+      id="s"
+    >
+      ▶ MOSTRAR
+    </button>
+
+
+    <button
+      class="danger"
+      id="h"
+    >
+      OCULTAR
+    </button>
+
+  </div>
+
+
+
+  <div class="hint">
+
+    Escribe una referencia bíblica.
+
+    · Enter = buscar
+
+    · Ctrl + Enter = mostrar
+
+    · Esc = ocultar
+
+  </div>
+
+
+
+  <div
+    class="status"
+    id="st"
+  ></div>
+
+
+
+  <div class="preview">
+
+    <span
+      class="p-ref"
+      id="pr"
+    >
+      —
+    </span>
+
+
+    <span
+      class="p-ver"
+      id="pv"
+    >
+      —
+    </span>
+
+
+    <div
+      class="p-text"
+      id="pt"
+    >
+      Escribe una referencia bíblica para comenzar.
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     LOWER THIRD
+===================================================== -->
+
+<section
+  class="panel"
+  id="lower"
+>
+
+<div class="card">
+
+  <div class="mini-title">
+    TÍTULO / LOWER THIRD
+  </div>
+
+
+
+  <div class="lower-grid">
+
+    <div>
+
+      <label>
+        SECCIÓN / ETIQUETA
+      </label>
+
+      <input
+        class="big"
+        id="eyebrow"
+      >
+
+    </div>
+
+
+
+    <div>
+
+      <label>
+        TÍTULO
+      </label>
+
+      <input
+        class="big"
+        id="title"
+        placeholder="Ej.: ADORACIÓN Y ALABANZA"
+      >
+
+    </div>
+
+  </div>
+
+
+
+  <label style="margin-top:15px">
+
+    SUBTÍTULO
+
+  </label>
+
+
+  <input
+    class="big"
+    id="subtitle"
+    placeholder="Ej.: Información adicional"
+  >
+
+
+
+  <!-- ACTIONS -->
+
+  <div class="actions">
+
+    <button
+      class="primary"
+      id="ls"
+    >
+      ▶ MOSTRAR
+    </button>
+
+
+    <button
+      class="save"
+      id="savePreset"
+    >
+      💾 GUARDAR PRESET
+    </button>
+
+
+    <button
+      class="danger"
+      id="lh"
+    >
+      OCULTAR
+    </button>
+
+  </div>
+
+
+
+  <div class="hint">
+
+    Selecciona un preset para cargarlo,
+    puedes modificarlo y luego presionar
+    <strong>MOSTRAR</strong>.
+
+  </div>
+
+
+
+  <!-- PRESETS -->
+
+  <div class="presets-box">
+
+    <div class="presets-header">
+
+      <div class="presets-title">
+
+        📋 PRESETS GUARDADOS
+
+      </div>
+
+    </div>
+
+
+    <div
+      class="preset-list"
+      id="presetList"
+    ></div>
+
+  </div>
+
+
+
+  <button
+    class="all"
+    id="allhide"
+  >
+
+    OCULTAR TODO
+    (Biblia + Lower Third)
+
+  </button>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONFIGURATION
+===================================================== -->
+
+<section
+  class="panel"
+  id="config"
+>
+
+<div class="card">
+
+  <div class="mini-title">
+
+    IDENTIDAD DE LA ORGANIZACIÓN
+
+  </div>
+
+
+
+  <div class="brand-grid">
+
+
+    <!-- FORM -->
+
+    <div>
+
+
+      <label>
+
+        NOMBRE DE LA IGLESIA / ORGANIZACIÓN
+
+      </label>
+
+
+      <input
+        id="orgName"
+        placeholder="Ej.: Mi Iglesia"
+      >
+
+
+
+      <label style="margin-top:15px">
+
+        LEMA O SUBTÍTULO INSTITUCIONAL
+
+      </label>
+
+
+      <input
+        id="orgTagline"
+        placeholder="Ej.: Un lugar para todos"
+      >
+
+
+
+      <label style="margin-top:15px">
+
+        LOGO
+
+      </label>
+
+
+      <input
+        id="logoFile"
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+      >
+
+
+      <div class="hint">
+
+        El logo se guarda localmente en este navegador.
+
+        La configuración puede enviarse directamente
+        al Overlay utilizado por OBS.
+
+      </div>
+
+
+
+      <div class="actions">
+
+
+        <button
+          class="save"
+          id="saveBranding"
+        >
+
+          💾 GUARDAR CONFIGURACIÓN
+
+        </button>
+
+
+
+        <button
+          class="secondary"
+          id="sendBranding"
+        >
+
+          📡 ENVIAR AL OVERLAY
+
+        </button>
+
+
+
+        <button
+          class="danger"
+          id="resetBranding"
+        >
+
+          RESTABLECER
+
+        </button>
+
+
+      </div>
+
+
+
+      <div class="config-note">
+
+        <strong>ChurchStream Control</strong>
+        está diseñado para ser utilizado por diferentes
+        iglesias y organizaciones.
+
+        <br><br>
+
+        Esta información se guarda localmente y puede
+        actualizarse en cualquier momento.
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- PREVIEW -->
+
+    <div class="brand-preview">
+
+
+      <img
+        id="brandLogoPreview"
+        class="brand-logo"
+        alt="Vista previa del logo"
+        style="display:none"
+      >
+
+
+      <div
+        id="brandNamePreview"
+        class="brand-name-preview"
+      >
+        MI ORGANIZACIÓN
+      </div>
+
+
+      <div
+        id="brandTagPreview"
+        class="brand-tag-preview"
+      >
+        Sin lema configurado
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+</section>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* =====================================================
+   CHANNELS
+===================================================== */
+
+const bcBible =
+  new BroadcastChannel(
+    'obs-bible-openlp'
+  );
+
+
+const bcLower =
+  new BroadcastChannel(
+    'obs-lower-third'
+  );
+
+
+const bcBranding =
+  new BroadcastChannel(
+    'obs-branding'
+  );
+
+
+/* =====================================================
+   OPENLP
+===================================================== */
+
+const API='/openlp';
+
+
+let cur={
+  reference:'',
+  version:'',
+  text:''
+};
+
+
+function render(){
+
+  $('pr').textContent =
+    cur.reference || '—';
+
+
+  $('pv').textContent =
+    cur.version || '—';
+
+
+  $('pt').textContent =
+    cur.text ||
+    'Sin resultado.';
+
+
+  localStorage.setItem(
+    'obs-bible-state',
+    JSON.stringify(cur)
+  );
+
+}
+
+
+function setStatus(text){
+
+  $('st').textContent=text;
+
+}
+
+
+
+/* =====================================================
+   OPENLP OPTIONS
+===================================================== */
+
+async function options(){
+
+  try{
+
+    let r=await fetch(
+
+      API+
+      '/api/v2/plugins/bibles/search-options?x='+
+      Date.now(),
+
+      {
+        cache:'no-store'
+      }
+
+    );
+
+
+    let d=await r.json();
+
+
+    if(!r.ok){
+
+      throw Error(
+        d.error ||
+        r.status
+      );
+
+    }
+
+
+    let option=
+      d.find(
+        x=>x.name==='primary bible'
+      ) ||
+      d[0];
+
+
+    $('v').innerHTML='';
+
+
+    (option.list||[])
+    .forEach(version=>{
+
+      let op=
+        document.createElement('option');
+
+
+      op.value=version;
+
+      op.textContent=version;
+
+      op.selected=
+        version===option.selected;
+
+
+      $('v').appendChild(op);
+
+    });
+
+
+    cur.version=
+      option.selected ||
+      $('v').value ||
+      '';
+
+
+    render();
+
+
+    $('conn').textContent=
+      '● OpenLP conectado';
+
+
+    $('conn').style.color=
+      '#75e0ad';
+
+
+    setStatus(
+      'OpenLP conectado. Versión primaria: '+
+      cur.version
+    );
+
+  }
+
+  catch(e){
+
+    $('conn').textContent=
+      '● OpenLP no disponible';
+
+
+    $('conn').style.color=
+      '#ff8b8b';
+
+
+    setStatus(
+      'No fue posible conectar con OpenLP: '+
+      e.message
+    );
+
+  }
+
+}
+
+
+
+/* =====================================================
+   CHANGE BIBLE VERSION
+===================================================== */
+
+async function changeVersion(){
+
+  let version=
+    $('v').value;
+
+
+  if(!version)return;
+
+
+  $('v').disabled=true;
+
+
+  setStatus(
+    'Cambiando versión a '+
+    version+
+    '…'
+  );
+
+
+  try{
+
+    let r=await fetch(
+
+      API+
+      '/api/v2/plugins/bibles/search-options',
+
+      {
+
+        method:'POST',
+
+        headers:{
+          'Content-Type':
+            'application/json'
+        },
+
+        body:JSON.stringify({
+
+          option:'primary bible',
+
+          value:version
+
+        })
+
+      }
+
+    );
+
+
+    if(!r.ok){
+
+      let d=
+        await r.json()
+        .catch(()=>({}));
+
+
+      throw Error(
+        d.error ||
+        ('HTTP '+r.status)
+      );
+
+    }
+
+
+    let verify=
+      await fetch(
+
+        API+
+        '/api/v2/plugins/bibles/search-options?verify='+
+        Date.now(),
+
+        {
+          cache:'no-store'
+        }
+
+      );
+
+
+    let data=
+      await verify.json();
+
+
+    let option=
+      data.find(
+        x=>x.name==='primary bible'
+      ) ||
+      data[0];
+
+
+    if(
+      !option ||
+      option.selected!==version
+    ){
+
+      throw Error(
+        'OpenLP no confirmó la versión seleccionada.'
+      );
+
+    }
+
+
+    cur.version=version;
+
+    cur.reference='';
+
+    cur.text='';
+
+
+    render();
+
+
+    setStatus(
+      'Versión activa: '+
+      version
+    );
+
+  }
+
+  catch(e){
+
+    setStatus(
+      'No se pudo cambiar la versión: '+
+      e.message
+    );
+
+
+    await options();
+
+  }
+
+  finally{
+
+    $('v').disabled=false;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   SEARCH BIBLE
+===================================================== */
+
+async function search(){
+
+  let query=
+    $('q').value.trim();
+
+
+  if(!query)return false;
+
+
+  setStatus(
+    'Buscando '+
+    query+
+    '…'
+  );
+
+
+  try{
+
+    let r=await fetch(
+
+      API+
+      '/api/v2/plugins/bibles/search?text='+
+      encodeURIComponent(query)+
+      '&x='+
+      Date.now(),
+
+      {
+        cache:'no-store'
+      }
+
+    );
+
+
+    let data=
+      await r.json();
+
+
+    if(!r.ok){
+
+      throw Error(
+        data.error ||
+        r.status
+      );
+
+    }
+
+
+    if(
+      !Array.isArray(data) ||
+      !data.length
+    ){
+
+      setStatus(
+        'No se encontró el pasaje.'
+      );
+
+      return false;
+
+    }
+
+
+    cur={
+
+      reference:query,
+
+      version:$('v').value,
+
+      text:data[0][1]
+
+    };
+
+
+    render();
+
+
+    setStatus(
+      'Pasaje encontrado y listo.'
+    );
+
+
+    return true;
+
+  }
+
+  catch(e){
+
+    setStatus(
+      'Error consultando OpenLP: '+
+      e.message
+    );
+
+    return false;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   SHOW / HIDE BIBLE
+===================================================== */
+
+async function showBible(){
+
+  if(
+
+    !cur.text ||
+
+    cur.reference!==$('q').value.trim() ||
+
+    cur.version!==$('v').value
+
+  ){
+
+    let found=
+      await search();
+
+
+    if(!found)return;
+
+  }
+
+
+  bcBible.postMessage({
+
+    type:'show',
+
+    ...cur
+
+  });
+
+
+  setStatus(
+    'Biblia EN PANTALLA.'
+  );
+
+}
+
+
+function hideBible(){
+
+  bcBible.postMessage({
+
+    type:'hide'
+
+  });
+
+
+  setStatus(
+    'Biblia ocultada.'
+  );
+
+}
+
+
+
+/* =====================================================
+   LOWER THIRD
+===================================================== */
+
+function getLowerData(){
+
+  return{
+
+    action:'show',
+
+    eyebrow:
+      $('eyebrow').value.trim(),
+
+    title:
+      $('title').value.trim(),
+
+    subtitle:
+      $('subtitle').value.trim()
+
+  };
+
+}
+
+
+function showLower(){
+
+  let data=
+    getLowerData();
+
+
+  bcLower.postMessage(data);
+
+
+  localStorage.setItem(
+
+    'obsLowerThird',
+
+    JSON.stringify(data)
+
+  );
+
+}
+
+
+function hideLower(){
+
+  let data={
+    action:'hide'
+  };
+
+
+  bcLower.postMessage(data);
+
+
+  localStorage.setItem(
+
+    'obsLowerThird',
+
+    JSON.stringify(data)
+
+  );
+
+}
+
+
+
+/* =====================================================
+   PRESETS
+===================================================== */
+
+const PRESET_KEY=
+  'churchstream-lower-presets';
+
+
+function getPresets(){
+
+  try{
+
+    return JSON.parse(
+
+      localStorage.getItem(
+        PRESET_KEY
+      )
+
+    ) || [];
+
+  }
+
+  catch(e){
+
+    return [];
+
+  }
+
+}
+
+
+function savePresets(data){
+
+  localStorage.setItem(
+
+    PRESET_KEY,
+
+    JSON.stringify(data)
+
+  );
+
+}
+
+
+function renderPresets(){
+
+  const list=
+    $('presetList');
+
+
+  const presets=
+    getPresets();
+
+
+  list.innerHTML='';
+
+
+  if(!presets.length){
+
+    list.innerHTML=`
+
+      <div class="empty-presets">
+
+        No hay presets guardados todavía.
+
+        <br><br>
+
+        Configura el Lower Third y presiona
+        <strong>GUARDAR PRESET</strong>.
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  presets.forEach(
+    (preset,index)=>{
+
+      const item=
+        document.createElement('div');
+
+
+      item.className=
+        'preset-item';
+
+
+      item.innerHTML=`
+
+        <div class="preset-eyebrow">
+
+          ${escapeHtml(
+            preset.eyebrow
+          )}
+
+        </div>
+
+
+        <div class="preset-name">
+
+          ${escapeHtml(
+            preset.title
+          )}
+
+        </div>
+
+
+        <div class="preset-subtitle">
+
+          ${escapeHtml(
+            preset.subtitle
+          )}
+
+        </div>
+
+
+        <button
+          class="delete-preset"
+          title="Eliminar preset"
+        >
+          ✕
+        </button>
+
+      `;
+
+
+      /* LOAD PRESET */
+
+      item.addEventListener(
+        'click',
+        ()=>{
+
+          $('eyebrow').value=
+            preset.eyebrow || '';
+
+
+          $('title').value=
+            preset.title || '';
+
+
+          $('subtitle').value=
+            preset.subtitle || '';
+
+        }
+      );
+
+
+      /* DELETE */
+
+      item
+      .querySelector('.delete-preset')
+      .addEventListener(
+        'click',
+        event=>{
+
+          event.stopPropagation();
+
+          deletePreset(index);
+
+        }
+      );
+
+
+      list.appendChild(item);
+
+    }
+  );
+
+}
+
+
+function savePreset(){
+
+  const preset={
+
+    eyebrow:
+      $('eyebrow').value.trim(),
+
+    title:
+      $('title').value.trim(),
+
+    subtitle:
+      $('subtitle').value.trim()
+
+  };
+
+
+  if(
+
+    !preset.eyebrow &&
+
+    !preset.title &&
+
+    !preset.subtitle
+
+  ){
+
+    alert(
+      'Escribe al menos un dato antes de guardar.'
+    );
+
+    return;
+
+  }
+
+
+  let presets=
+    getPresets();
+
+
+  const exists=
+    presets.some(
+      p=>
+
+        p.eyebrow===
+        preset.eyebrow &&
+
+        p.title===
+        preset.title &&
+
+        p.subtitle===
+        preset.subtitle
+    );
+
+
+  if(exists){
+
+    alert(
+      'Este preset ya está guardado.'
+    );
+
+    return;
+
+  }
+
+
+  presets.push(preset);
+
+
+  savePresets(presets);
+
+
+  renderPresets();
+
+}
+
+
+function deletePreset(index){
+
+  let presets=
+    getPresets();
+
+
+  let preset=
+    presets[index];
+
+
+  let name=
+
+    preset.title ||
+
+    preset.eyebrow ||
+
+    'este preset';
+
+
+  if(
+
+    confirm(
+      '¿Eliminar el preset "'+
+      name+
+      '"?'
+    )
+
+  ){
+
+    presets.splice(index,1);
+
+    savePresets(presets);
+
+    renderPresets();
+
+  }
+
+}
+
+
+function escapeHtml(text){
+
+  const div=
+    document.createElement('div');
+
+
+  div.textContent=
+    text || '';
+
+
+  return div.innerHTML;
+
+}
+
+
+
+/* =====================================================
+   BRANDING
+===================================================== */
+
+const BRAND_KEY=
+  'churchstream-branding';
+
+
+const DEFAULT_BRANDING={
+
+  organization:
+    'MI ORGANIZACIÓN',
+
+  tagline:
+    '',
+
+  logo:
+    ''
+
+};
+
+
+let currentLogo='';
+
+
+function getBranding(){
+
+  try{
+
+    return{
+
+      ...DEFAULT_BRANDING,
+
+      ...(
+        JSON.parse(
+          localStorage.getItem(BRAND_KEY)
+        ) || {}
+      )
+
+    };
+
+  }
+
+  catch(e){
+
+    return{
+      ...DEFAULT_BRANDING
+    };
+
+  }
+
+}
+
+
+function saveBranding(data){
+
+  localStorage.setItem(
+
+    BRAND_KEY,
+
+    JSON.stringify(data)
+
+  );
+
+}
+
+
+function currentBranding(){
+
+  const saved=
+    getBranding();
+
+
+  return{
+
+    organization:
+
+      $('orgName').value.trim() ||
+
+      DEFAULT_BRANDING.organization,
+
+
+    tagline:
+
+      $('orgTagline').value.trim(),
+
+
+    logo:
+
+      currentLogo ||
+
+      saved.logo ||
+
+      ''
+
+  };
+
+}
+
+
+
+/* APPLY BRANDING TO CONTROLLER */
+
+function applyBranding(){
+
+  const branding=
+    getBranding();
+
+
+  currentLogo=
+    branding.logo || '';
+
+
+  $('orgName').value=
+    branding.organization;
+
+
+  $('orgTagline').value=
+    branding.tagline;
+
+
+  $('headerOrg').textContent=
+    branding.organization;
+
+
+  $('brandNamePreview').textContent=
+    branding.organization;
+
+
+  $('brandTagPreview').textContent=
+
+    branding.tagline ||
+
+    'Sin lema configurado';
+
+
+  if(branding.logo){
+
+    $('brandLogoPreview').src=
+      branding.logo;
+
+
+    $('brandLogoPreview').style.display=
+      'block';
+
+  }
+
+  else{
+
+    $('brandLogoPreview')
+    .removeAttribute('src');
+
+
+    $('brandLogoPreview').style.display=
+      'none';
+
+  }
+
+
+  /* Valores iniciales del Lower Third */
+
+  if(!$('eyebrow').value.trim()){
+
+    $('eyebrow').value=
+      branding.organization;
+
+  }
+
+
+  if(!$('subtitle').value.trim()){
+
+    $('subtitle').value=
+      branding.tagline;
+
+  }
+
+}
+
+
+
+/* LIVE PREVIEW */
+
+function previewBranding(){
+
+  const branding=
+    currentBranding();
+
+
+  $('headerOrg').textContent=
+    branding.organization;
+
+
+  $('brandNamePreview').textContent=
+    branding.organization;
+
+
+  $('brandTagPreview').textContent=
+
+    branding.tagline ||
+
+    'Sin lema configurado';
+
+}
+
+
+
+/* =====================================================
+   SEND BRANDING TO OVERLAY
+===================================================== */
+
+function broadcastBranding(){
+
+  const branding=
+    currentBranding();
+
+
+  bcBranding.postMessage({
+
+    type:'branding',
+
+    organization:
+      branding.organization,
+
+    tagline:
+      branding.tagline,
+
+    logo:
+      branding.logo
+
+  });
+
+}
+
+
+
+/* =====================================================
+   BRANDING EVENTS
+===================================================== */
+
+$('orgName')
+.addEventListener(
+  'input',
+  previewBranding
+);
+
+
+$('orgTagline')
+.addEventListener(
+  'input',
+  previewBranding
+);
+
+
+$('logoFile')
+.addEventListener(
+  'change',
+  event=>{
+
+    const file=
+      event.target.files?.[0];
+
+
+    if(!file)return;
+
+
+    const reader=
+      new FileReader();
+
+
+    reader.onload=()=>{
+
+      currentLogo=
+        reader.result;
+
+
+      $('brandLogoPreview').src=
+        currentLogo;
+
+
+      $('brandLogoPreview').style.display=
+        'block';
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+  }
+);
+
+
+
+$('saveBranding').onclick=()=>{
+
+  const branding=
+    currentBranding();
+
+
+  saveBranding(branding);
+
+
+  currentLogo=
+    branding.logo;
+
+
+  applyBranding();
+
+
+  broadcastBranding();
+
+
+  /* Actualizar valores sugeridos */
+
+  $('eyebrow').value=
+    branding.organization;
+
+
+  if(
+    branding.tagline &&
+    !$('subtitle').value.trim()
+  ){
+
+    $('subtitle').value=
+      branding.tagline;
+
+  }
+
+
+  alert(
+    'Configuración guardada correctamente.'
+  );
+
+};
+
+
+
+$('sendBranding').onclick=()=>{
+
+  const branding=
+    currentBranding();
+
+
+  saveBranding(branding);
+
+
+  currentLogo=
+    branding.logo;
+
+
+  broadcastBranding();
+
+
+  alert(
+    'Configuración enviada al Overlay.'
+  );
+
+};
+
+
+
+$('resetBranding').onclick=()=>{
+
+  if(
+
+    !confirm(
+      '¿Restablecer nombre, lema y logo?'
+    )
+
+  )return;
+
+
+  localStorage.removeItem(
+    BRAND_KEY
+  );
+
+
+  currentLogo='';
+
+
+  $('logoFile').value='';
+
+
+  applyBranding();
+
+
+  $('eyebrow').value=
+    DEFAULT_BRANDING.organization;
+
+
+  $('subtitle').value='';
+
+
+  bcBranding.postMessage({
+
+    type:'branding',
+
+    organization:
+      DEFAULT_BRANDING.organization,
+
+    tagline:'',
+
+    logo:''
+
+  });
+
+};
+
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+$('b').onclick=
+  search;
+
+
+$('s').onclick=
+  showBible;
+
+
+$('h').onclick=
+  hideBible;
+
+
+$('v').onchange=
+  changeVersion;
+
+
+$('ls').onclick=
+  showLower;
+
+
+$('lh').onclick=
+  hideLower;
+
+
+$('savePreset').onclick=
+  savePreset;
+
+
+$('allhide').onclick=()=>{
+
+  hideBible();
+
+  hideLower();
+
+  setStatus(
+    'Todo ocultado.'
+  );
+
+};
+
+
+
+$('q').onkeydown=
+event=>{
+
+  if(event.key==='Enter'){
+
+    event.preventDefault();
+
+
+    event.ctrlKey
+
+      ? showBible()
+
+      : search();
+
+  }
+
+};
+
+
+
+document.onkeydown=
+event=>{
+
+  if(event.key==='Escape'){
+
+    hideBible();
+
+    hideLower();
+
+  }
+
+};
+
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+document
+.querySelectorAll('.tab')
+.forEach(tab=>{
+
+  tab.onclick=()=>{
+
+    document
+    .querySelectorAll('.tab')
+    .forEach(
+      item=>
+        item.classList.remove('active')
+    );
+
+
+    document
+    .querySelectorAll('.panel')
+    .forEach(
+      item=>
+        item.classList.remove('active')
+    );
+
+
+    tab.classList.add('active');
+
+
+    $(
+      tab.dataset.tab
+    )
+    .classList.add('active');
+
+  };
+
+});
+
+
+
+/* =====================================================
+   BIBLE BOOKS
+===================================================== */
+
+const BOOKS=[
+
+  'Génesis',
+  'Éxodo',
+  'Levítico',
+  'Números',
+  'Deuteronomio',
+
+  'Josué',
+  'Jueces',
+  'Rut',
+
+  '1 Samuel',
+  '2 Samuel',
+
+  '1 Reyes',
+  '2 Reyes',
+
+  '1 Crónicas',
+  '2 Crónicas',
+
+  'Esdras',
+  'Nehemías',
+  'Ester',
+  'Job',
+  'Salmos',
+  'Proverbios',
+  'Eclesiastés',
+  'Cantares',
+
+  'Isaías',
+  'Jeremías',
+  'Lamentaciones',
+  'Ezequiel',
+  'Daniel',
+
+  'Oseas',
+  'Joel',
+  'Amós',
+  'Abdías',
+  'Jonás',
+  'Miqueas',
+  'Nahúm',
+  'Habacuc',
+  'Sofonías',
+  'Hageo',
+  'Zacarías',
+  'Malaquías',
+
+  'Mateo',
+  'Marcos',
+  'Lucas',
+  'Juan',
+  'Hechos',
+  'Romanos',
+
+  '1 Corintios',
+  '2 Corintios',
+
+  'Gálatas',
+  'Efesios',
+  'Filipenses',
+  'Colosenses',
+
+  '1 Tesalonicenses',
+  '2 Tesalonicenses',
+
+  '1 Timoteo',
+  '2 Timoteo',
+
+  'Tito',
+  'Filemón',
+  'Hebreos',
+  'Santiago',
+
+  '1 Pedro',
+  '2 Pedro',
+
+  '1 Juan',
+  '2 Juan',
+  '3 Juan',
+
+  'Judas',
+  'Apocalipsis'
+
+];
+
+
+function fillBookSuggestions(){
+
+  const datalist=
+    $('books');
+
+
+  datalist.innerHTML='';
+
+
+  BOOKS.forEach(book=>{
+
+    const option=
+      document.createElement('option');
+
+
+    option.value=book;
+
+
+    datalist.appendChild(option);
+
+  });
+
+}
+
+
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+fillBookSuggestions();
+
+
+renderPresets();
+
+
+applyBranding();
+
+
+options();
+
+
+</script>
+
+</body>
+
+</html>
