@@ -809,6 +809,12 @@ const bcBranding =
     'obs-branding'
   );
 
+/* =========================================================
+   SINCRONIZACIÓN CON EL SERVIDOR
+   ========================================================= */
+
+let lastStateSignature = '';
+let serverConnected = false;
 
 
 /* =========================================================
@@ -858,6 +864,186 @@ let branding = {
 };
 
 
+
+/* =========================================================
+   SINCRONIZACIÓN AUTOMÁTICA CON EL SERVIDOR
+   ========================================================= */
+
+function getStateSignature(state){
+
+  try{
+
+    return JSON.stringify(state);
+
+  }
+
+  catch(error){
+
+    return '';
+
+  }
+
+}
+
+
+function applyServerState(state){
+
+  if(!state)
+    return;
+
+
+  /*
+     Evitamos volver a aplicar exactamente
+     el mismo estado continuamente.
+  */
+
+  const signature =
+    getStateSignature(state);
+
+
+  if(
+    signature &&
+    signature === lastStateSignature
+  ){
+    return;
+  }
+
+
+  lastStateSignature =
+    signature;
+
+
+  /*
+     Actualizar branding primero.
+  */
+
+  if(state.branding){
+
+    applyBranding(
+      state.branding
+    );
+
+  }
+
+
+  /*
+     Aplicar contenido según el modo activo.
+  */
+
+  if(
+    state.mode === 'bible'
+  ){
+
+    showBible(
+      state.bible || {}
+    );
+
+    return;
+
+  }
+
+
+  if(
+    state.mode === 'lower'
+  ){
+
+    showLower(
+      state.lowerThird || {}
+    );
+
+    return;
+
+  }
+
+
+  /*
+     Estado oculto.
+  */
+
+  if(
+    state.mode === 'hidden'
+  ){
+
+    hideAll();
+
+  }
+
+}
+
+
+async function syncWithServer(){
+
+  try{
+
+    const response =
+      await fetch(
+        '/api/state?_=' + Date.now(),
+        {
+          cache: 'no-store'
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        'HTTP ' + response.status
+      );
+
+    }
+
+
+    const state =
+      await response.json();
+
+
+    /*
+       El servidor está disponible.
+    */
+
+    serverConnected = true;
+
+
+    applyServerState(
+      state
+    );
+
+  }
+
+  catch(error){
+
+    /*
+       El servidor todavía no está disponible.
+
+       No mostramos errores en pantalla porque
+       OBS debe permanecer completamente transparente.
+    */
+
+    serverConnected = false;
+
+  }
+
+}
+
+
+/*
+   Intentar inmediatamente.
+*/
+
+syncWithServer();
+
+
+/*
+   Volver a comprobar periódicamente.
+
+   Esto permite que OBS abra antes que
+   ChurchStream Control.
+*/
+
+setInterval(
+  syncWithServer,
+  1000
+);
 
 /* =========================================================
    CARGAR CONFIGURACIÓN LOCAL

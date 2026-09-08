@@ -6,7 +6,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
-
+import threading
 
 # ============================================================
 # ChurchStream Control
@@ -52,8 +52,32 @@ HOST = os.environ.get(
 OPENLP_TIMEOUT = int(
     os.environ.get("OPENLP_TIMEOUT", "5")
 )
+# ============================================================
+# ESTADO DEL OVERLAY
+# ============================================================
 
+OVERLAY_STATE = {
+    "mode": "hidden",
 
+    "bible": {
+        "reference": "",
+        "version": "",
+        "text": ""
+    },
+
+    "lowerThird": {
+        "eyebrow": "",
+        "title": "",
+        "subtitle": ""
+    },
+
+    "branding": {
+        "organization": "ChurchStream",
+        "tagline": "",
+        "logo": ""
+    }
+}
+STATE_LOCK = threading.Lock()
 # ============================================================
 # LIBROS DE LA BIBLIA
 # ============================================================
@@ -725,6 +749,26 @@ class ChurchStreamHandler(
         parsed = urllib.parse.urlparse(
             self.path
         )
+        # ====================================================
+        # ESTADO ACTUAL DEL OVERLAY
+        # ====================================================
+
+        if parsed.path == "/api/state":
+
+            with STATE_LOCK:
+
+                state = json.loads(
+                    json.dumps(
+                        OVERLAY_STATE
+                    )
+                )
+
+            self.send_json(
+                200,
+                state
+            )
+
+            return  
 
         # ====================================================
         # PROXY OPENLP
@@ -865,6 +909,91 @@ class ChurchStreamHandler(
             self.path
         )
 
+        # ====================================================
+        # ACTUALIZAR ESTADO DEL OVERLAY
+        # ====================================================
+
+        if parsed.path == "/api/state":
+
+            global OVERLAY_STATE
+
+            length = int(
+                self.headers.get(
+                    "Content-Length",
+                    "0"
+                )
+            )
+
+            raw = (
+                self.rfile.read(length)
+                if length
+                else b""
+            )
+
+            try:
+
+                data = (
+                    json.loads(
+                        raw.decode("utf-8")
+                    )
+                    if raw
+                    else {}
+                )
+
+            except Exception:
+
+                self.send_json(
+                    400,
+                    {"error": "JSON inválido"}
+                )
+
+                return
+
+
+            with STATE_LOCK:
+
+                if "mode" in data:
+
+                    OVERLAY_STATE["mode"] = data["mode"]
+
+
+                if "bible" in data:
+
+                    OVERLAY_STATE["bible"].update(
+                        data["bible"]
+                    )
+
+
+                if "lowerThird" in data:
+
+                    OVERLAY_STATE["lowerThird"].update(
+                        data["lowerThird"]
+                    )
+
+
+                if "branding" in data:
+
+                    OVERLAY_STATE["branding"].update(
+                        data["branding"]
+                    )
+
+
+                state = json.loads(
+                    json.dumps(
+                        OVERLAY_STATE
+                    )
+                )
+
+
+            self.send_json(
+                200,
+                {
+                    "ok": True,
+                    "state": state
+                }
+            )
+
+            return
         if parsed.path.startswith("/openlp/"):
 
             suffix = parsed.path[

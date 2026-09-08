@@ -1735,6 +1735,11 @@ async function showBible(){
 
   });
 
+  saveServerState({
+    mode: 'bible',
+    bible: cur
+  });
+
 
   setStatus(
     'Biblia EN PANTALLA.'
@@ -1742,13 +1747,52 @@ async function showBible(){
 
 }
 
+async function saveServerState(data){
+
+  try{
+
+    await fetch(
+      '/api/state',
+      {
+        method: 'POST',
+
+        headers:{
+          'Content-Type':
+            'application/json'
+        },
+
+        body:
+          JSON.stringify(data)
+      }
+    );
+
+  }
+
+  catch(error){
+
+    /*
+       No interrumpimos el funcionamiento
+       inmediato del BroadcastChannel.
+    */
+
+  }
+
+}
+
 
 function hideBible(){
 
   bcBible.postMessage({
-
     type:'hide'
+  });
 
+
+  saveServerState({
+    mode: 'bible',
+    bible: {
+      ...cur,
+      visible: false
+    }
   });
 
 
@@ -1757,7 +1801,6 @@ function hideBible(){
   );
 
 }
-
 
 
 /* =====================================================
@@ -1786,7 +1829,7 @@ function getLowerData(){
 
 function showLower(){
 
-  let data=
+  let data =
     getLowerData();
 
 
@@ -1794,15 +1837,20 @@ function showLower(){
 
 
   localStorage.setItem(
-
     'obsLowerThird',
-
     JSON.stringify(data)
-
   );
 
-}
 
+  saveServerState({
+    mode: 'lower',
+    lower: {
+      ...data,
+      visible: true
+    }
+    });
+
+}
 
 function hideLower(){
 
@@ -1815,16 +1863,19 @@ function hideLower(){
 
 
   localStorage.setItem(
-
     'obsLowerThird',
-
     JSON.stringify(data)
-
   );
 
+
+  saveServerState({
+    mode: 'lower',
+    lower: {
+      visible: false
+    }
+});
+
 }
-
-
 
 /* =====================================================
    PRESETS
@@ -2344,11 +2395,10 @@ function previewBranding(){
 
 function broadcastBranding(){
 
-  const branding=
+  const branding =
     currentBranding();
 
-
-  bcBranding.postMessage({
+  const data = {
 
     type:'branding',
 
@@ -2361,10 +2411,15 @@ function broadcastBranding(){
     logo:
       branding.logo
 
+  };
+
+  bcBranding.postMessage(data);
+
+  saveServerState({
+    branding: data
   });
 
 }
-
 
 
 /* =====================================================

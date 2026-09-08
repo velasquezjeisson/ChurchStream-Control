@@ -158,7 +158,7 @@ def script_load(settings):
     )
 
     # Esperar 3 segundos para que OBS termine de iniciar
-    obs.timer_add(iniciar_churchstream, 3000)
+    obs.timer_add(iniciar_churchstream, 2000)
 
 
 # ==========================================================
