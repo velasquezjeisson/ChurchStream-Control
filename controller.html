@@ -1706,44 +1706,24 @@ async function search(){
    SHOW / HIDE BIBLE
 ===================================================== */
 
-async function showBible(){
-
-  if(
-
-    !cur.text ||
-
-    cur.reference!==$('q').value.trim() ||
-
-    cur.version!==$('v').value
-
-  ){
-
-    let found=
-      await search();
-
-
-    if(!found)return;
-
-  }
-
+function showBible(){
 
   bcBible.postMessage({
-
     type:'show',
-
     ...cur
-
   });
+
 
   saveServerState({
-    mode: 'bible',
-    bible: cur
+
+    mode:'bible',
+
+    bible:{
+      ...cur,
+      visible:true
+    }
+
   });
-
-
-  setStatus(
-    'Biblia EN PANTALLA.'
-  );
 
 }
 
@@ -1788,21 +1768,17 @@ function hideBible(){
 
 
   saveServerState({
-    mode: 'bible',
-    bible: {
+
+    mode:'bible',
+
+    bible:{
       ...cur,
-      visible: false
+      visible:false
     }
+
   });
 
-
-  setStatus(
-    'Biblia ocultada.'
-  );
-
 }
-
-
 /* =====================================================
    LOWER THIRD
 ===================================================== */
@@ -1829,12 +1805,20 @@ function getLowerData(){
 
 function showLower(){
 
-  let data =
+  const data =
     getLowerData();
 
 
+  /*
+     Respuesta inmediata.
+  */
+
   bcLower.postMessage(data);
 
+
+  /*
+     Persistencia local opcional.
+  */
 
   localStorage.setItem(
     'obsLowerThird',
@@ -1842,38 +1826,50 @@ function showLower(){
   );
 
 
+  /*
+     Estado persistente.
+  */
+
   saveServerState({
-    mode: 'lower',
-    lower: {
+
+    mode:'lower',
+
+    lowerThird:{
+
       ...data,
-      visible: true
+
+      visible:true
+
     }
-    });
+
+  });
 
 }
 
 function hideLower(){
 
-  let data={
+  /*
+     Respuesta inmediata.
+  */
+
+  bcLower.postMessage({
     action:'hide'
-  };
+  });
 
 
-  bcLower.postMessage(data);
-
-
-  localStorage.setItem(
-    'obsLowerThird',
-    JSON.stringify(data)
-  );
-
+  /*
+     Persistencia.
+  */
 
   saveServerState({
-    mode: 'lower',
-    lower: {
-      visible: false
+
+    mode:'lower',
+
+    lowerThird:{
+      visible:false
     }
-});
+
+  });
 
 }
 

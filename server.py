@@ -57,18 +57,21 @@ OPENLP_TIMEOUT = int(
 # ============================================================
 
 OVERLAY_STATE = {
+
     "mode": "hidden",
 
     "bible": {
         "reference": "",
         "version": "",
-        "text": ""
+        "text": "",
+        "visible": False
     },
 
     "lowerThird": {
         "eyebrow": "",
         "title": "",
-        "subtitle": ""
+        "subtitle": "",
+        "visible": False
     },
 
     "branding": {
@@ -76,7 +79,10 @@ OVERLAY_STATE = {
         "tagline": "",
         "logo": ""
     }
+
 }
+
+
 STATE_LOCK = threading.Lock()
 # ============================================================
 # LIBROS DE LA BIBLIA

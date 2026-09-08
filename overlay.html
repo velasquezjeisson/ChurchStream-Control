@@ -813,9 +813,11 @@ const bcBranding =
    SINCRONIZACIÓN CON EL SERVIDOR
    ========================================================= */
 
+const SERVER_URL =
+  'http://127.0.0.1:8765';
+
 let lastStateSignature = '';
 let serverConnected = false;
-
 
 /* =========================================================
    ELEMENTOS
@@ -893,8 +895,8 @@ function applyServerState(state){
 
 
   /*
-     Evitamos volver a aplicar exactamente
-     el mismo estado continuamente.
+     Evitamos reprocesar exactamente
+     el mismo estado.
   */
 
   const signature =
@@ -905,7 +907,9 @@ function applyServerState(state){
     signature &&
     signature === lastStateSignature
   ){
+
     return;
+
   }
 
 
@@ -914,7 +918,7 @@ function applyServerState(state){
 
 
   /*
-     Actualizar branding primero.
+     Branding siempre primero.
   */
 
   if(state.branding){
@@ -927,29 +931,34 @@ function applyServerState(state){
 
 
   /*
-     Aplicar contenido según el modo activo.
+     =========================
+     BIBLIA
+     =========================
   */
 
   if(
     state.mode === 'bible'
   ){
 
-    showBible(
-      state.bible || {}
-    );
-
-    return;
-
-  }
+    const bible =
+      state.bible || {};
 
 
-  if(
-    state.mode === 'lower'
-  ){
+    if(
+      bible.visible === false
+    ){
 
-    showLower(
-      state.lowerThird || {}
-    );
+      B.classList.remove(
+        'visible'
+      );
+
+    }
+    else{
+
+      showBible(bible);
+
+    }
+
 
     return;
 
@@ -957,7 +966,44 @@ function applyServerState(state){
 
 
   /*
-     Estado oculto.
+     =========================
+     LOWER THIRD
+     =========================
+  */
+
+  if(
+    state.mode === 'lower'
+  ){
+
+    const lower =
+      state.lowerThird || {};
+
+
+    if(
+      lower.visible === false
+    ){
+
+      L.classList.remove(
+        'visible'
+      );
+
+    }
+    else{
+
+      showLower(lower);
+
+    }
+
+
+    return;
+
+  }
+
+
+  /*
+     =========================
+     OCULTAR TODO
+     =========================
   */
 
   if(
@@ -971,23 +1017,32 @@ function applyServerState(state){
 }
 
 
+
+
+
 async function syncWithServer(){
 
   try{
 
     const response =
       await fetch(
-        '/api/state?_=' + Date.now(),
+
+        SERVER_URL +
+        '/api/state?_=' +
+        Date.now(),
+
         {
-          cache: 'no-store'
+          cache:'no-store'
         }
+
       );
 
 
     if(!response.ok){
 
       throw new Error(
-        'HTTP ' + response.status
+        'HTTP ' +
+        response.status
       );
 
     }
@@ -998,33 +1053,55 @@ async function syncWithServer(){
 
 
     /*
-       El servidor está disponible.
+       El servidor acaba de estar disponible.
     */
 
-    serverConnected = true;
+    const wasDisconnected =
+      !serverConnected;
 
 
-    applyServerState(
-      state
-    );
+    serverConnected =
+      true;
+
+
+    /*
+       Aplicar siempre el estado recibido.
+
+       Especialmente importante cuando
+       el servidor aparece después de
+       que OBS ya estaba funcionando.
+    */
+
+    applyServerState(state);
+
+
+    if(wasDisconnected){
+
+      console.log(
+        'ChurchStream Server conectado'
+      );
+
+    }
 
   }
 
   catch(error){
 
-    /*
-       El servidor todavía no está disponible.
+    if(serverConnected){
 
-       No mostramos errores en pantalla porque
-       OBS debe permanecer completamente transparente.
-    */
+      console.log(
+        'ChurchStream Server desconectado'
+      );
 
-    serverConnected = false;
+    }
+
+
+    serverConnected =
+      false;
 
   }
 
 }
-
 
 /*
    Intentar inmediatamente.
