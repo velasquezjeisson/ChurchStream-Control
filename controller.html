@@ -2095,6 +2095,50 @@ async function selectHymn(hymn) {
 
     selectedHymn = fullHymn;
 
+        hymnParts = [];
+
+    currentHymnPart = 0;
+
+
+    /*
+      Construir las partes del himno
+      usando verses + sequence.
+    */
+
+   const verses =
+    fullHymn.verses || [];
+
+
+    /*
+      Construir una parte por cada
+      contenido/estrofa del himno.
+    */
+
+    verses.forEach(verse => {
+
+      const contents =
+        verse.contents || [];
+
+
+      contents.forEach(content => {
+
+        hymnParts.push({
+
+          key: content.id,
+
+          title:
+            `ESTROFA ${verse.number}`,
+
+          text:
+            content.content || ''
+
+        });
+
+      });
+
+    });
+
+    renderHymnPart();
 
     hymnNumber.textContent =
       `HIMNO ${fullHymn.number}`;
@@ -2102,38 +2146,6 @@ async function selectHymn(hymn) {
 
     hymnTitle.textContent =
       fullHymn.title;
-
-
-    /*
-      Mostrar inicialmente el contenido
-      completo del himno.
-    */
-
-    let text = '';
-
-
-    if (fullHymn.contents) {
-
-      fullHymn.contents.forEach((verse, index) => {
-
-        text += verse.content;
-
-        if (
-          index <
-          fullHymn.contents.length - 1
-        ) {
-
-          text += '\n\n';
-
-        }
-
-      });
-
-    }
-
-
-    hymnText.textContent =
-      text;
 
 
     hymnStatus.textContent =
@@ -2157,6 +2169,41 @@ async function selectHymn(hymn) {
 
 }
 
+/* -----------------------------------------------------
+   NOMBRE DE LA PARTE DEL HIMNO
+----------------------------------------------------- */
+
+function getHymnPartTitle(key) {
+
+  const value =
+    String(key).toLowerCase();
+
+
+  if (
+    value.includes('chorus') ||
+    value.includes('coro') ||
+    value === 'c'
+  ) {
+
+    return 'CORO';
+
+  }
+
+
+  const number =
+    value.match(/\d+/);
+
+
+  if (number) {
+
+    return `ESTROFA ${number[0]}`;
+
+  }
+
+
+  return String(key).toUpperCase();
+
+}
 
 /* -----------------------------------------------------
    EVENTOS
@@ -2167,6 +2214,65 @@ searchHymn.addEventListener(
 
   searchHymns
 );
+
+
+/* -----------------------------------------------------
+   NAVEGACIÓN ENTRE ESTROFAS
+----------------------------------------------------- */
+
+document
+  .getElementById('prevHymnPart')
+  .addEventListener(
+    'click',
+
+    () => {
+
+      if (
+        currentHymnPart <= 0
+      ) {
+
+        return;
+
+      }
+
+
+      currentHymnPart--;
+
+      console.log(
+        'Hymn Parts:',
+        hymnParts
+      );
+
+      renderHymnPart();
+
+    }
+  );
+
+
+document
+  .getElementById('nextHymnPart')
+  .addEventListener(
+    'click',
+
+    () => {
+
+      if (
+        currentHymnPart >=
+        hymnParts.length - 1
+      ) {
+
+        return;
+
+      }
+
+
+      currentHymnPart++;
+
+
+      renderHymnPart();
+
+    }
+  );
 
 
 /*
@@ -2187,6 +2293,44 @@ hymnSearch.addEventListener(
   }
 );
 
+
+
+function renderHymnPart() {
+
+  if (!hymnParts.length) {
+
+    hymnNumber.textContent = '—';
+
+    hymnTitle.textContent =
+      'El himno no tiene contenido disponible.';
+
+    hymnText.textContent = '';
+
+    return;
+
+  }
+
+
+  const part =
+    hymnParts[currentHymnPart];
+
+
+  hymnNumber.textContent =
+    `HIMNO ${selectedHymn.number}`;
+
+
+  hymnTitle.textContent =
+    part.title;
+
+
+  hymnText.textContent =
+    part.text;
+
+
+  hymnStatus.textContent =
+    `${currentHymnPart + 1} de ${hymnParts.length}`;
+
+}
 
 /* =====================================================
    LOWER THIRD
