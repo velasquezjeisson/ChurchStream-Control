@@ -1757,6 +1757,41 @@ bcBible.onmessage = e => {
 };
 
 
+/* =========================================================
+   MENSAJES HIMNOS
+   ========================================================= */
+
+bcHymn.onmessage = e => {
+
+  const hymn =
+    e.data;
+
+
+  if(
+    hymn?.visible === false
+  ){
+
+    H.classList.remove(
+      'visible'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    hymn
+  ){
+
+    showHymn(
+      hymn
+    );
+
+  }
+
+};
+
 
 /* =========================================================
    MENSAJES LOWER THIRD
