@@ -38,30 +38,6 @@ if not defined OPENLP_EXE (
     )
 )
 
-
-REM ----------------------------------------------------------
-REM INICIAR API DEL HIMNARIO ADVENTISTA
-REM ----------------------------------------------------------
-
-echo.
-echo Verificando API del Himnario Adventista...
-
-if exist "%~dp0himadve-api" (
-
-    echo Iniciando API del Himnario...
-
-    start "Himnario Adventista API" /min cmd /c ^
-    "cd /d ""%~dp0himadve-api"" && bun run start"
-
-) else (
-
-    echo.
-    echo [ADVERTENCIA] No se encontro la carpeta himadve-api.
-    echo La funcion Himnario no estara disponible.
-    echo.
-
-)
-
 REM ----------------------------------------------------------
 REM VERIFICAR SI OPENLP YA ESTA EJECUTANDOSE
 REM ----------------------------------------------------------
@@ -93,6 +69,55 @@ if %ERRORLEVEL% NEQ 0 (
 
 )
 
+REM ----------------------------------------------------------
+REM API DEL HIMNARIO ADVENTISTA
+REM ----------------------------------------------------------
+
+echo.
+echo ==========================================
+echo HIMNARIO ADVENTISTA API
+echo ==========================================
+
+
+if not exist "%~dp0himadve-api\package.json" (
+
+    echo [ERROR] No se encontro la carpeta himadve-api.
+
+) else (
+
+    where bun >nul 2>&1
+
+    if errorlevel 1 (
+
+        echo [ERROR] Bun no esta instalado o no esta disponible en PATH.
+
+    ) else (
+
+        echo Bun encontrado.
+
+
+        if not exist "%~dp0himadve-api\node_modules" (
+
+            echo Instalando dependencias del Himnario...
+
+            pushd "%~dp0himadve-api"
+
+            bun install
+
+            popd
+
+        )
+
+
+        echo Iniciando API del Himnario...
+
+
+        start "Himnario Adventista API" /min cmd /c ^
+        "cd /d ""%~dp0himadve-api"" && bun run start"
+
+    )
+
+)
 
 REM ----------------------------------------------------------
 REM INICIAR SERVIDOR CHURCHSTREAM
