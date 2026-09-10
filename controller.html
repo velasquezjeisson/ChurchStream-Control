@@ -2250,13 +2250,19 @@ document
 
 
       currentHymnPart--;
-
+      
       console.log(
         'Hymn Parts:',
         hymnParts
       );
 
       renderHymnPart();
+
+      if(hymnVisibleInOBS){
+
+        showHymnInOBS();
+
+      }
 
     }
   );
@@ -2416,6 +2422,7 @@ async function showHymnInOBS(){
 
   });
 
+  hymnVisibleInOBS = true;
 
   hymnStatus.textContent =
     '✓ Himno enviado a OBS';
@@ -2450,6 +2457,7 @@ async function hideHymnInOBS(){
 
   });
 
+  hymnVisibleInOBS = false;
 
   hymnStatus.textContent =
     'Himno ocultado';
