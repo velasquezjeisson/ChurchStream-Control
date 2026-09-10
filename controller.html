@@ -1932,6 +1932,8 @@ let hymnParts = [];
 
 let currentHymnPart = 0;
 
+let hymnVisibleInOBS = false;
+
 /* -----------------------------------------------------
    REFERENCIAS A ELEMENTOS
 ----------------------------------------------------- */
@@ -2281,6 +2283,12 @@ document
 
 
       renderHymnPart();
+
+      if(hymnVisibleInOBS){
+
+        showHymnInOBS();
+
+      }
 
     }
   );
