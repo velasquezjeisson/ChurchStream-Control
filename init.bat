@@ -38,6 +38,30 @@ if not defined OPENLP_EXE (
     )
 )
 
+
+REM ----------------------------------------------------------
+REM INICIAR API DEL HIMNARIO ADVENTISTA
+REM ----------------------------------------------------------
+
+echo.
+echo Verificando API del Himnario Adventista...
+
+if exist "%~dp0himadve-api" (
+
+    echo Iniciando API del Himnario...
+
+    start "Himnario Adventista API" /min cmd /c ^
+    "cd /d ""%~dp0himadve-api"" && bun run start"
+
+) else (
+
+    echo.
+    echo [ADVERTENCIA] No se encontro la carpeta himadve-api.
+    echo La funcion Himnario no estara disponible.
+    echo.
+
+)
+
 REM ----------------------------------------------------------
 REM VERIFICAR SI OPENLP YA ESTA EJECUTANDOSE
 REM ----------------------------------------------------------
@@ -68,6 +92,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo OpenLP ya se encuentra ejecutandose.
 
 )
+
 
 REM ----------------------------------------------------------
 REM INICIAR SERVIDOR CHURCHSTREAM
