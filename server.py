@@ -94,6 +94,14 @@ OVERLAY_STATE = {
         "visible": False
     },
 
+     "hymn": {
+        "number": "",
+        "title": "",
+        "partTitle": "",
+        "text": "",
+        "visible": False
+    },
+
     "branding": {
         "organization": "ChurchStream",
         "tagline": "",
@@ -1114,6 +1122,11 @@ class ChurchStreamHandler(
                         data["lowerThird"]
                     )
 
+                if "hymn" in data:
+
+                    OVERLAY_STATE["hymn"].update(
+                        data["hymn"]
+                    )
 
                 if "branding" in data:
 
