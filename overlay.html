@@ -693,6 +693,137 @@ body{
 
 }
 
+/* =========================================================
+   HIMNOS
+   ========================================================= */
+
+#hymn{
+
+  position:fixed;
+
+  left:50px;
+  right:50px;
+  bottom:45px;
+
+  min-height:220px;
+
+  padding:
+    25px
+    42px
+    28px
+    48px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(8,42,78,.97),
+      rgba(5,73,119,.95)
+    );
+
+  border:
+    2px solid rgba(222,178,76,.92);
+
+  border-left:
+    7px solid #d9ae45;
+
+  border-radius:18px;
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.18);
+
+  color:white;
+
+  opacity:0;
+
+  transform:
+    translateX(-70px)
+    scale(.985);
+
+  transition:
+    opacity .35s ease,
+    transform .45s cubic-bezier(.2,.8,.2,1);
+
+  overflow:hidden;
+
+}
+
+
+#hymn.visible{
+
+  opacity:1;
+
+  transform:
+    translateX(0)
+    scale(1);
+
+}
+
+
+.hymn-header{
+
+  font-size:32px;
+
+  font-weight:800;
+
+  color:#f0c95e;
+
+  text-transform:uppercase;
+
+  margin-bottom:6px;
+
+}
+
+
+.hymn-title{
+
+  font-size:26px;
+
+  font-weight:700;
+
+  color:#9edff5;
+
+  text-transform:uppercase;
+
+  margin-bottom:18px;
+
+}
+
+
+.hymn-part{
+
+  font-size:22px;
+
+  font-weight:800;
+
+  letter-spacing:2px;
+
+  color:#f0c95e;
+
+  text-transform:uppercase;
+
+  margin-bottom:12px;
+
+}
+
+
+.hymn-text{
+
+  font-size:32px;
+
+  line-height:1.35;
+
+  font-weight:500;
+
+  color:#ffffff;
+
+  text-shadow:
+    0 2px 3px rgba(0,0,0,.35);
+
+  white-space:pre-line;
+
+}
+
 </style>
 </head>
 
@@ -729,6 +860,36 @@ body{
 
   </div>
 
+    <!-- ============================================
+       HIMNOS
+       ============================================ -->
+
+  <div id="hymn">
+
+    <div
+      class="hymn-header"
+      id="hymnNumber">
+    </div>
+
+
+    <div
+      class="hymn-title"
+      id="hymnTitle">
+    </div>
+
+
+    <div
+      class="hymn-part"
+      id="hymnPart">
+    </div>
+
+
+    <div
+      class="hymn-text"
+      id="hymnText">
+    </div>
+
+  </div>
 
 
   <!-- ============================================
@@ -830,6 +991,8 @@ const B =
 const L =
   document.getElementById('lowerThird');
 
+const H =
+  document.getElementById('hymn');
 
 const logo =
   document.getElementById('brandLogo');
@@ -964,8 +1127,42 @@ function applyServerState(state){
 
   }
 
+/*
+   =========================
+   HIMNOS
+   =========================
+*/
 
-  /*
+if(
+  state.mode === 'hymn'
+){
+
+  const hymn =
+    state.hymn || {};
+
+
+  if(
+    hymn.visible === false
+  ){
+
+    H.classList.remove(
+      'visible'
+    );
+
+  }
+  else{
+
+    showHymn(hymn);
+
+  }
+
+
+  return;
+
+}
+
+
+/*
      =========================
      LOWER THIRD
      =========================
@@ -1015,9 +1212,6 @@ function applyServerState(state){
   }
 
 }
-
-
-
 
 
 async function syncWithServer(){
@@ -1386,6 +1580,42 @@ function showBible(d){
 
 }
 
+
+function showHymn(hymn){
+
+  if(!hymn){
+    return;
+  }
+
+
+  document.getElementById('hymnNumber').textContent =
+    `HIMNO ${hymn.number || ''}`;
+
+
+  document.getElementById('hymnTitle').textContent =
+    hymn.title || '';
+
+
+  document.getElementById('hymnPart').textContent =
+    hymn.partTitle || '';
+
+
+  document.getElementById('hymnText').textContent =
+    hymn.text || '';
+
+
+  H.classList.add('visible');
+
+
+  /*
+    Ocultar los otros overlays
+  */
+
+  B.classList.remove('visible');
+
+  L.classList.remove('visible');
+
+}
 
 
 /* =========================================================
