@@ -30,6 +30,8 @@ def strip_accents(value):
 # CONFIGURACIÓN
 # ============================================================
 
+
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # OpenLP Web API
@@ -52,6 +54,24 @@ HOST = os.environ.get(
 OPENLP_TIMEOUT = int(
     os.environ.get("OPENLP_TIMEOUT", "5")
 )
+
+
+# ============================================================
+# HIMNARIO ADVENTISTA API
+# ============================================================
+
+HYMNS_API_URL = os.environ.get(
+    "HYMNS_API_URL",
+    "http://127.0.0.1:3000"
+)
+
+HYMNS_TIMEOUT = int(
+    os.environ.get(
+        "HYMNS_TIMEOUT",
+        "5"
+    )
+)
+
 # ============================================================
 # ESTADO DEL OVERLAY
 # ============================================================
@@ -746,6 +766,95 @@ class ChurchStreamHandler(
                 }
             )
 
+        # --------------------------------------------------------
+    # PROXY HIMNARIO ADVENTISTA
+    # --------------------------------------------------------
+
+    def proxy_hymns(
+        self,
+        suffix="",
+        query=""
+    ):
+
+        target = (
+            HYMNS_API_URL.rstrip("/")
+            + "/hymn"
+            + suffix
+            + (("?" + query) if query else "")
+        )
+
+        headers = {
+            "Accept": "application/json",
+            "User-Agent": "ChurchStream-Control/1.0"
+        }
+
+        try:
+
+            request = urllib.request.Request(
+                target,
+                headers=headers,
+                method="GET"
+            )
+
+            with opener().open(
+                request,
+                timeout=HYMNS_TIMEOUT
+            ) as response:
+
+                response_bytes = response.read()
+
+                self.send_response(response.status)
+
+                self.send_header(
+                    "Content-Type",
+                    response.headers.get(
+                        "Content-Type",
+                        "application/json; charset=utf-8"
+                    )
+                )
+
+                self.send_header(
+                    "Access-Control-Allow-Origin",
+                    "*"
+                )
+
+                self.send_header(
+                    "Cache-Control",
+                    "no-store"
+                )
+
+                self.end_headers()
+
+                self.wfile.write(response_bytes)
+
+        except urllib.error.HTTPError as error:
+
+            detail = error.read().decode(
+                "utf-8",
+                "replace"
+            )
+
+            self.send_json(
+                error.code,
+                {
+                    "error":
+                        f"Himnario API HTTP {error.code}",
+                    "detail": detail
+                }
+            )
+
+        except Exception as error:
+
+            self.send_json(
+                502,
+                {
+                    "error":
+                        "No se pudo conectar con la API del Himnario",
+                    "hymns_api": HYMNS_API_URL,
+                    "detail": str(error)
+                }
+            )
+
     # --------------------------------------------------------
     # GET
     # --------------------------------------------------------
@@ -775,6 +884,35 @@ class ChurchStreamHandler(
             )
 
             return  
+
+
+                # ====================================================
+        
+        # PROXY HIMNARIO ADVENTISTA
+        # ====================================================
+
+        if parsed.path == "/api/hymns":
+
+            self.proxy_hymns(
+                "",
+                parsed.query
+            )
+
+            return
+
+
+        if parsed.path.startswith("/api/hymns/"):
+
+            number = parsed.path[
+                len("/api/hymns/"):
+            ]
+
+            self.proxy_hymns(
+                "/" + number,
+                parsed.query
+            )
+
+            return
 
         # ====================================================
         # PROXY OPENLP
@@ -1119,3 +1257,4 @@ if __name__ == "__main__":
             f"Verifica que el puerto {PORT} "
             "no esté siendo utilizado."
         )
+

@@ -778,6 +778,11 @@ button:hover{
     📖 BIBLIA
   </button>
 
+  <button
+  class="tab"
+  data-tab="himnos">
+  🎵 HIMNOS
+  </button>
 
   <button
     class="tab"
@@ -935,12 +940,122 @@ button:hover{
 
 </section>
 
+<!-- =====================================================
+     HIMNOS
+===================================================== -->
+
+<section
+  class="panel"
+  id="himnos"
+>
+
+<div class="card">
+
+  <div class="mini-title">
+    HIMNARIO ADVENTISTA
+  </div>
+
+
+  <label>
+    BUSCAR HIMNO
+  </label>
+
+
+  <input
+    id="hymnSearch"
+    placeholder="Ej.: Jesús, esperanza, 52..."
+    autocomplete="off"
+  >
+
+
+  <div class="actions">
+
+    <button
+      class="primary"
+      id="searchHymn"
+    >
+      🔎 BUSCAR
+    </button>
+
+  </div>
+
+
+  <div
+    class="status"
+    id="hymnStatus"
+  ></div>
+
+
+  <!-- RESULTADOS -->
+
+  <div
+    id="hymnResults"
+    class="hymn-results"
+  ></div>
+
+
+  <!-- PREVIEW -->
+
+  <div
+    id="hymnPreview"
+    class="preview"
+  >
+
+    <span
+      class="p-ref"
+      id="hymnNumber"
+    >
+      —
+    </span>
+
+
+    <div
+      class="p-text"
+      id="hymnTitle"
+    >
+      Selecciona un himno.
+    </div>
+
+
+    <div
+      class="p-text"
+      id="hymnText"
+    >
+    </div>
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div class="actions">
+
+    <button
+      class="secondary"
+      id="showHymn"
+    >
+      ▶ MOSTRAR
+    </button>
+
+
+    <button
+      class="danger"
+      id="hideHymn"
+    >
+      OCULTAR
+    </button>
+
+  </div>
+
+</div>
+
+</section>
 
 
 <!-- =====================================================
      LOWER THIRD
 ===================================================== -->
-
+/
 <section
   class="panel"
   id="lower"
@@ -1301,6 +1416,10 @@ const bcBranding =
     'obs-branding'
   );
 
+const bcHymn =
+  new BroadcastChannel(
+    'obs-hymn'
+  );
 
 /* =====================================================
    OPENLP
@@ -1779,6 +1898,271 @@ function hideBible(){
   });
 
 }
+
+
+/* =====================================================
+   HIMNOS ADVENTISTAS
+===================================================== */
+
+let selectedHymn = null;
+
+
+/* -----------------------------------------------------
+   REFERENCIAS A ELEMENTOS
+----------------------------------------------------- */
+
+const hymnSearch = document.getElementById('hymnSearch');
+
+const searchHymn = document.getElementById('searchHymn');
+
+const hymnStatus = document.getElementById('hymnStatus');
+
+const hymnResults = document.getElementById('hymnResults');
+
+const hymnNumber = document.getElementById('hymnNumber');
+
+const hymnTitle = document.getElementById('hymnTitle');
+
+const hymnText = document.getElementById('hymnText');
+
+const showHymnBtn = document.getElementById('showHymn');
+
+const hideHymnBtn = document.getElementById('hideHymn');
+
+
+/* -----------------------------------------------------
+   BUSCAR HIMNOS
+----------------------------------------------------- */
+
+async function searchHymns() {
+
+  const search = hymnSearch.value.trim();
+
+
+  hymnResults.innerHTML = '';
+
+  hymnStatus.textContent = 'Buscando himnos...';
+
+
+  try {
+
+    let url = '/api/hymns';
+
+
+    if (search) {
+
+      url += '?search=' + encodeURIComponent(search);
+
+    }
+
+
+    const response = await fetch(url);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `Error HTTP ${response.status}`
+      );
+
+    }
+
+
+    const hymns = await response.json();
+
+
+    hymnStatus.textContent =
+      `${hymns.length} himno(s) encontrado(s)`;
+
+
+    if (!hymns.length) {
+
+      hymnResults.innerHTML =
+        '<div class="status">No se encontraron himnos.</div>';
+
+      return;
+
+    }
+
+
+    hymns.forEach(hymn => {
+
+      const item =
+        document.createElement('div');
+
+
+      item.className =
+        'hymn-result';
+
+
+      item.innerHTML = `
+
+        <strong>
+          ${hymn.number}
+        </strong>
+
+        ${hymn.title}
+
+      `;
+
+
+      item.addEventListener(
+        'click',
+
+        () => selectHymn(hymn)
+
+      );
+
+
+      hymnResults.appendChild(item);
+
+    });
+
+
+  }
+  catch (error) {
+
+    console.error(
+      'Error buscando himnos:',
+
+      error
+    );
+
+
+    hymnStatus.textContent =
+      '❌ Error conectando con la API de himnos.';
+
+  }
+
+}
+
+
+/* -----------------------------------------------------
+   SELECCIONAR HIMNO
+----------------------------------------------------- */
+
+async function selectHymn(hymn) {
+
+  hymnStatus.textContent =
+    'Cargando himno...';
+
+
+  try {
+
+    const response =
+      await fetch(
+        `/api/hymns/${hymn.number}`
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        `Error HTTP ${response.status}`
+      );
+
+    }
+
+
+    const fullHymn =
+      await response.json();
+
+
+    selectedHymn = fullHymn;
+
+
+    hymnNumber.textContent =
+      `HIMNO ${fullHymn.number}`;
+
+
+    hymnTitle.textContent =
+      fullHymn.title;
+
+
+    /*
+      Mostrar inicialmente el contenido
+      completo del himno.
+    */
+
+    let text = '';
+
+
+    if (fullHymn.contents) {
+
+      fullHymn.contents.forEach((verse, index) => {
+
+        text += verse.content;
+
+        if (
+          index <
+          fullHymn.contents.length - 1
+        ) {
+
+          text += '\n\n';
+
+        }
+
+      });
+
+    }
+
+
+    hymnText.textContent =
+      text;
+
+
+    hymnStatus.textContent =
+      '✓ Himno seleccionado';
+
+
+  }
+  catch (error) {
+
+    console.error(
+      'Error cargando himno:',
+
+      error
+    );
+
+
+    hymnStatus.textContent =
+      '❌ Error cargando el himno.';
+
+  }
+
+}
+
+
+/* -----------------------------------------------------
+   EVENTOS
+----------------------------------------------------- */
+
+searchHymn.addEventListener(
+  'click',
+
+  searchHymns
+);
+
+
+/*
+  Permitir ENTER en el buscador.
+*/
+
+hymnSearch.addEventListener(
+  'keydown',
+
+  event => {
+
+    if (event.key === 'Enter') {
+
+      searchHymns();
+
+    }
+
+  }
+);
+
+
 /* =====================================================
    LOWER THIRD
 ===================================================== */
