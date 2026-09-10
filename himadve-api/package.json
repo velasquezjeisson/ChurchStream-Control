@@ -1,0 +1,30 @@
+{
+  "name": "himnario-api",
+  "version": "3.4.0",
+  "author": "jhormanrus",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhormanrus/himnario-adventista-api.git"
+  },
+  "module": "index.ts",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/bun": "latest"
+  },
+  "bugs": {
+    "url": "https://github.com/jhormanrus/himnario-adventista-api/issues"
+  },
+  "description": "Himnario Adventista API",
+  "homepage": "https://github.com/jhormanrus/himnario-adventista-api#readme",
+  "keywords": ["himnario", "adventista", "api"],
+  "license": "ISC",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
+  },
+  "type": "module",
+  "dependencies": {
+    "cromo": "^1.0.3"
+  }
+}
