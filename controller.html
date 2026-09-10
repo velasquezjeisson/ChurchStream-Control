@@ -1028,24 +1028,46 @@ button:hover{
 
   <!-- ACCIONES -->
 
-  <div class="actions">
+<!-- NAVEGACIÓN DEL HIMNO -->
 
-    <button
-      class="secondary"
-      id="showHymn"
-    >
-      ▶ MOSTRAR
-    </button>
+<div class="actions">
+
+  <button
+    class="secondary"
+    id="prevHymnPart"
+  >
+    ◀ ANTERIOR
+  </button>
+
+  <button
+    class="secondary"
+    id="nextHymnPart"
+  >
+    SIGUIENTE ▶
+  </button>
+
+</div>
 
 
-    <button
-      class="danger"
-      id="hideHymn"
-    >
-      OCULTAR
-    </button>
+<!-- ACCIONES OBS -->
 
-  </div>
+<div class="actions">
+
+  <button
+    class="primary"
+    id="showHymn"
+  >
+    ▶ MOSTRAR EN OBS
+  </button>
+
+  <button
+    class="danger"
+    id="hideHymn"
+  >
+    ✕ OCULTAR
+  </button>
+
+</div>
 
 </div>
 
@@ -1906,6 +1928,9 @@ function hideBible(){
 
 let selectedHymn = null;
 
+let hymnParts = [];
+
+let currentHymnPart = 0;
 
 /* -----------------------------------------------------
    REFERENCIAS A ELEMENTOS
