@@ -958,6 +958,10 @@ const bcBible =
     'obs-bible-openlp'
   );
 
+const bcHymn =
+  new BroadcastChannel(
+    'obs-hymn'
+  );
 
 const bcLower =
   new BroadcastChannel(
@@ -969,6 +973,8 @@ const bcBranding =
   new BroadcastChannel(
     'obs-branding'
   );
+
+
 
 /* =========================================================
    SINCRONIZACIÓN CON EL SERVIDOR
@@ -1702,6 +1708,8 @@ function showLower(d){
 function hideAll(){
 
   B.classList.remove('visible');
+    
+  H.classList.remove('visible');
 
   L.classList.remove('visible');
 
