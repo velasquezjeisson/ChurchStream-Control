@@ -1955,6 +1955,17 @@ const showHymnBtn = document.getElementById('showHymn');
 const hideHymnBtn = document.getElementById('hideHymn');
 
 
+showHymnBtn.addEventListener(
+  'click',
+  showHymnInOBS
+);
+
+
+hideHymnBtn.addEventListener(
+  'click',
+  hideHymnInOBS
+);
+
 /* -----------------------------------------------------
    BUSCAR HIMNOS
 ----------------------------------------------------- */
@@ -2329,6 +2340,111 @@ function renderHymnPart() {
 
   hymnStatus.textContent =
     `${currentHymnPart + 1} de ${hymnParts.length}`;
+
+}
+
+
+async function showHymnInOBS(){
+
+  if(!selectedHymn){
+
+    hymnStatus.textContent =
+      '⚠️ Selecciona un himno primero.';
+
+    return;
+
+  }
+
+
+  const currentPart =
+    hymnParts[currentHymnPart];
+
+
+  if(!currentPart){
+
+    hymnStatus.textContent =
+      '⚠️ No hay una estrofa seleccionada.';
+
+    return;
+
+  }
+
+
+  const data = {
+
+    number:
+      selectedHymn.number,
+
+    title:
+      selectedHymn.title,
+
+    partTitle:
+      currentPart.title,
+
+    text:
+      currentPart.text,
+
+    visible: true
+
+  };
+
+
+  /*
+     Comunicación inmediata.
+  */
+
+  bcHymn.postMessage(data);
+
+
+  /*
+     Estado persistente.
+  */
+
+  await saveServerState({
+
+    mode: 'hymn',
+
+    hymn: data
+
+  });
+
+
+  hymnStatus.textContent =
+    '✓ Himno enviado a OBS';
+
+}
+
+async function hideHymnInOBS(){
+
+  const data = {
+
+    visible: false
+
+  };
+
+
+  /*
+     Comunicación inmediata.
+  */
+
+  bcHymn.postMessage(data);
+
+
+  /*
+     Estado persistente.
+  */
+
+  await saveServerState({
+
+    mode: 'hidden',
+
+    hymn: data
+
+  });
+
+
+  hymnStatus.textContent =
+    'Himno ocultado';
 
 }
 
