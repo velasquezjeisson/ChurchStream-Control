@@ -1218,15 +1218,6 @@ button:hover{
 
 
 
-  <button
-    class="all"
-    id="allhide"
-  >
-
-    OCULTAR TODO
-    (Biblia + Lower Third)
-
-  </button>
 
 </div>
 
@@ -2418,6 +2409,19 @@ function hideBible(){
 
 }
 
+function hideAll(){
+
+  saveServerState({
+
+    mode:'hidden'
+
+  });
+
+  bibleVisibleInOBS = false;
+
+  hymnVisibleInOBS = false;
+
+}
 
 /* =====================================================
    HIMNOS ADVENTISTAS
@@ -2462,7 +2466,7 @@ showHymnBtn.addEventListener(
 
 hideHymnBtn.addEventListener(
   'click',
-  hideHymnInOBS
+  hideAll
 );
 
 /* -----------------------------------------------------
@@ -3787,7 +3791,7 @@ $('s').onclick=
 
 
 $('h').onclick=
-  hideBible;
+  hideAll;
 
 
 $('v').onchange=
@@ -3799,7 +3803,7 @@ $('ls').onclick=
 
 
 $('lh').onclick=
-  hideLower;
+  hideAll;
 
 $('prevBiblePart').onclick =
   previousBiblePart;
@@ -3818,6 +3822,8 @@ $('allhide').onclick=()=>{
   hideBible();
 
   hideLower();
+
+  hideAll();
 
   setStatus(
     'Todo ocultado.'
@@ -3852,9 +3858,7 @@ event=>{
 
   if(event.key==='Escape'){
 
-    hideBible();
-
-    hideLower();
+    hideAll();
 
   }
 
