@@ -2092,25 +2092,38 @@ function renderBiblePart(){
 
 }
 
-function nextBiblePart(){
+
+async function nextBiblePart(){
+
+  /*
+     Todavía hay partes cargadas.
+  */
 
   if(
-    currentBiblePart >=
+    currentBiblePart <
     bibleParts.length - 1
   ){
+
+    currentBiblePart++;
+
+    renderBiblePart();
 
     return;
 
   }
 
 
-  currentBiblePart++;
+  /*
+     Estamos en el último
+     versículo cargado.
 
+     Buscar el siguiente
+     automáticamente en OpenLP.
+  */
 
-  renderBiblePart();
+  await loadNextBiblePart();
 
 }
-
 
 
 /* =====================================================
@@ -2150,7 +2163,6 @@ function previousBiblePart(){
 
   }
 
-
   currentBiblePart--;
 
 
@@ -2158,6 +2170,198 @@ function previousBiblePart(){
 
 }
 
+async function loadNextBiblePart(){
+
+  /*
+     Verificar que exista
+     un versículo actual.
+  */
+
+  if(
+    !cur.reference
+  ){
+
+    return false;
+
+  }
+
+
+  /*
+     Detectar referencias como:
+
+     Juan 3:16
+     1 Juan 3:16
+  */
+
+  const match =
+    cur.reference.match(
+      /^(.+?)\s+(\d+):(\d+)$/
+    );
+
+
+  if(
+    !match
+  ){
+
+    console.warn(
+      'No se pudo interpretar la referencia:',
+      cur.reference
+    );
+
+    return false;
+
+  }
+
+
+  const book =
+    match[1].trim();
+
+
+  const chapter =
+    parseInt(match[2]);
+
+
+  const verse =
+    parseInt(match[3]);
+
+
+  /*
+     Construir la siguiente referencia.
+  */
+
+  const nextReference =
+    `${book} ${chapter}:${verse + 1}`;
+
+
+  try{
+
+    setStatus(
+      'Buscando ' +
+      nextReference +
+      '…'
+    );
+
+
+    const r =
+      await fetch(
+
+        API +
+        '/api/v2/plugins/bibles/search?text=' +
+        encodeURIComponent(nextReference) +
+        '&x=' +
+        Date.now(),
+
+        {
+          cache:'no-store'
+        }
+
+      );
+
+
+    const data =
+      await r.json();
+
+
+    if(
+      !r.ok
+    ){
+
+      throw Error(
+        data.error ||
+        r.status
+      );
+
+    }
+
+
+    /*
+       Si OpenLP no encontró
+       el siguiente versículo.
+    */
+
+    if(
+      !Array.isArray(data) ||
+      !data.length
+    ){
+
+      setStatus(
+        'No se encontró ' +
+        nextReference
+      );
+
+      return false;
+
+    }
+
+
+    /*
+       Crear nueva parte.
+    */
+
+    const newPart = {
+
+      reference:
+        data[0][0] ||
+        nextReference,
+
+      text:
+        data[0][1] ||
+        ''
+
+    };
+
+
+    /*
+       Agregarla a la navegación.
+    */
+
+    bibleParts.push(
+      newPart
+    );
+
+
+    /*
+       Avanzar a la nueva parte.
+    */
+
+    currentBiblePart =
+      bibleParts.length - 1;
+
+
+    /*
+       Renderizar.
+
+       renderBiblePart() se encargará
+       también de actualizar OBS
+       si bibleVisibleInOBS = true.
+    */
+
+    renderBiblePart();
+
+
+    return true;
+
+  }
+
+  catch(e){
+
+    console.error(
+      'Error cargando siguiente versículo:',
+      e
+    );
+
+
+    setStatus(
+      'No se pudo cargar el siguiente versículo: ' +
+      e.message
+    );
+
+
+    return false;
+
+  }
+
+}
 
 async function saveServerState(data){
 
