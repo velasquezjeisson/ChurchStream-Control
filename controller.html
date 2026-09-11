@@ -857,7 +857,19 @@ button:hover{
 
   </div>
 
+  <button
+    class="secondary"
+    id="prevBiblePart"
+  >
+    ◀ ANTERIOR
+  </button>
 
+  <button
+    class="secondary"
+    id="nextBiblePart"
+  >
+    SIGUIENTE ▶
+  </button>
 
   <div class="actions">
 
@@ -1455,6 +1467,12 @@ let cur={
   version:'',
   text:''
 };
+
+let bibleParts = [];
+
+let currentBiblePart = 0;
+
+let bibleVisibleInOBS = false;
 
 
 function render(){
