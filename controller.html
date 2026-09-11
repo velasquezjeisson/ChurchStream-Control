@@ -2134,6 +2134,8 @@ function showBible(){
 
   });
 
+  bibleVisibleInOBS = true;
+
 }
 
 function previousBiblePart(){
@@ -2205,6 +2207,8 @@ function hideBible(){
     }
 
   });
+
+  bibleVisibleInOBS = false;
 
 }
 
@@ -3590,6 +3594,13 @@ $('ls').onclick=
 
 $('lh').onclick=
   hideLower;
+
+$('prevBiblePart').onclick =
+  previousBiblePart;
+
+
+$('nextBiblePart').onclick =
+  nextBiblePart;
 
 
 $('savePreset').onclick=
