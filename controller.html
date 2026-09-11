@@ -1764,55 +1764,169 @@ async function changeVersion(){
 
 async function search(){
 
-  let query=
+  let query =
     $('q').value.trim();
 
 
-  if(!query)return false;
+  if(!query)
+    return false;
 
 
   setStatus(
-    'Buscando '+
-    query+
+    'Buscando ' +
+    query +
     '…'
   );
 
 
   try{
 
-    let r=await fetch(
 
-      API+
-      '/api/v2/plugins/bibles/search?text='+
-      encodeURIComponent(query)+
-      '&x='+
-      Date.now(),
+    /*
+      Reiniciamos navegación bíblica.
+    */
 
-      {
-        cache:'no-store'
-      }
+    bibleParts = [];
 
-    );
+    currentBiblePart = 0;
 
 
-    let data=
-      await r.json();
+    /*
+      Detectar referencias como:
+
+      Juan 3:16
+      Juan 3:16-18
+      1 Juan 3:16-18
+    */
+
+    const match =
+      query.match(
+        /^(.+?)\s+(\d+):(\d+)(?:-(\d+))?$/
+      );
 
 
-    if(!r.ok){
+    if(!match){
 
       throw Error(
-        data.error ||
-        r.status
+        'Formato de referencia no reconocido.'
       );
 
     }
 
 
-    if(
-      !Array.isArray(data) ||
-      !data.length
+    const book =
+      match[1].trim();
+
+
+    const chapter =
+      match[2];
+
+
+    const startVerse =
+      parseInt(match[3]);
+
+
+    const endVerse =
+      match[4]
+        ? parseInt(match[4])
+        : startVerse;
+
+
+    /*
+      Buscar cada versículo individualmente.
+
+      Esto permite navegar:
+
+      Juan 3:16
+      Juan 3:17
+      Juan 3:18
+    */
+
+    for(
+      let verse = startVerse;
+      verse <= endVerse;
+      verse++
     ){
+
+
+      const reference =
+        `${book} ${chapter}:${verse}`;
+
+
+      let r =
+        await fetch(
+
+          API +
+          '/api/v2/plugins/bibles/search?text=' +
+          encodeURIComponent(reference) +
+          '&x=' +
+          Date.now(),
+
+          {
+            cache:'no-store'
+          }
+
+        );
+
+
+      let data =
+        await r.json();
+
+
+      if(!r.ok){
+
+        throw Error(
+          data.error ||
+          r.status
+        );
+
+      }
+
+
+      if(
+        !Array.isArray(data) ||
+        !data.length
+      ){
+
+        console.warn(
+          'Versículo no encontrado:',
+          reference
+        );
+
+        continue;
+
+      }
+
+
+      /*
+        OpenLP devuelve:
+
+        [
+          [
+            "Juan 3:16",
+            "Texto..."
+          ]
+        ]
+      */
+
+      bibleParts.push({
+
+        reference:
+          data[0][0] || reference,
+
+        text:
+          data[0][1] || ''
+
+      });
+
+    }
+
+
+    /*
+      Verificar resultados.
+    */
+
+    if(!bibleParts.length){
 
       setStatus(
         'No se encontró el pasaje.'
@@ -1823,13 +1937,30 @@ async function search(){
     }
 
 
-    cur={
+    /*
+      Cargar inicialmente
+      el primer versículo.
+    */
 
-      reference:query,
+    currentBiblePart = 0;
 
-      version:$('v').value,
 
-      text:data[0][1]
+    const part =
+      bibleParts[
+        currentBiblePart
+      ];
+
+
+    cur = {
+
+      reference:
+        part.reference,
+
+      version:
+        $('v').value,
+
+      text:
+        part.text
 
     };
 
@@ -1838,7 +1969,13 @@ async function search(){
 
 
     setStatus(
-      'Pasaje encontrado y listo.'
+
+      'Pasaje encontrado: ' +
+
+      `${currentBiblePart + 1} de ` +
+
+      bibleParts.length
+
     );
 
 
@@ -1848,10 +1985,19 @@ async function search(){
 
   catch(e){
 
-    setStatus(
-      'Error consultando OpenLP: '+
-      e.message
+    console.error(
+      'Error buscando Biblia:',
+      e
     );
+
+
+    setStatus(
+
+      'Error consultando OpenLP: ' +
+      e.message
+
+    );
+
 
     return false;
 
@@ -1859,7 +2005,111 @@ async function search(){
 
 }
 
+function renderBiblePart(){
 
+  /*
+     Verificar que exista
+     una parte seleccionada.
+  */
+
+  if(
+    !bibleParts.length
+  ){
+
+    return;
+
+  }
+
+
+  const part =
+    bibleParts[
+      currentBiblePart
+    ];
+
+
+  if(!part){
+
+    return;
+
+  }
+
+
+  /*
+     Actualizar el objeto actual
+     que utiliza el resto
+     del Controller.
+  */
+
+  cur = {
+
+    reference:
+      part.reference,
+
+    version:
+      $('v').value,
+
+    text:
+      part.text
+
+  };
+
+
+  /*
+     Actualizar la previsualización.
+  */
+
+  render();
+
+
+  /*
+     Mostrar posición actual.
+  */
+
+  setStatus(
+
+    'Pasaje encontrado: ' +
+
+    `${currentBiblePart + 1} de ` +
+
+    bibleParts.length
+
+  );
+
+
+  /*
+     Si la Biblia ya está
+     visible en OBS, actualizar
+     automáticamente el Overlay.
+  */
+
+  if(
+    bibleVisibleInOBS
+  ){
+
+    showBible();
+
+  }
+
+}
+
+function nextBiblePart(){
+
+  if(
+    currentBiblePart >=
+    bibleParts.length - 1
+  ){
+
+    return;
+
+  }
+
+
+  currentBiblePart++;
+
+
+  renderBiblePart();
+
+}
 
 /* =====================================================
    SHOW / HIDE BIBLE
@@ -1885,6 +2135,25 @@ function showBible(){
   });
 
 }
+
+function previousBiblePart(){
+
+  if(
+    currentBiblePart <= 0
+  ){
+
+    return;
+
+  }
+
+
+  currentBiblePart--;
+
+
+  renderBiblePart();
+
+}
+
 
 async function saveServerState(data){
 
