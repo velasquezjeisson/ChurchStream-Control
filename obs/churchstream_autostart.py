@@ -78,22 +78,23 @@ def iniciar_churchstream():
     project_folder = os.path.dirname(obs_folder)
 
     # Ruta de init.bat
-    init_bat = os.path.join(project_folder, "init.bat")
+    # Ruta de init.vbs
+    init_vbs = os.path.join(project_folder, "init.vbs")
 
     obs.script_log(
         obs.LOG_INFO,
-        "[ChurchStream] Buscando init.bat en: " + init_bat
+        "[ChurchStream] Buscando init_vbs en: " + init_vbs
     )
 
     # ======================================================
     # VERIFICAR INIT.BAT
     # ======================================================
 
-    if not os.path.exists(init_bat):
+    if not os.path.exists(init_vbs):
 
         obs.script_log(
             obs.LOG_ERROR,
-            "[ChurchStream] ERROR: No se encontró init.bat."
+            "[ChurchStream] ERROR: No se encontró init.vbs."
         )
 
         return
@@ -110,9 +111,9 @@ def iniciar_churchstream():
         )
 
         subprocess.Popen(
-            ["cmd.exe", "/c", init_bat],
+            ["wscript.exe", init_vbs],
             cwd=project_folder,
-            creationflags=subprocess.CREATE_NEW_CONSOLE
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
 
         obs.script_log(
